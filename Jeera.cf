@@ -14,7 +14,7 @@ InstanceName. InstanceName ::= Ident;
 
 -- Assignment rule
 Assignment. Assignment ::= Ident "=" Rvalue;
-separator nonempty Assignment ",";
+separator nonempty Assignment ";";
 
 rules Rvalue ::= Ident | Double | Ident | Integer; 
 

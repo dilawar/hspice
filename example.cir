@@ -1,11 +1,17 @@
 r1 = Resistor {
-    value = 10000
+    value = 10000;
     };
 
 c1 = Capacitor {
-    value = 100000
-    , init = 0.1
+    value = 100000;
+    init = 0.1;
     };
+
+d1 = Device {
+        input = (a, 0);
+        output = (b, 0);
+        (volt b) = (volt a) * 0.3e-5 - 23.001;
+};
 
 // Add them in parallel
 //subc = parallel r1 r2
