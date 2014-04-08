@@ -4,11 +4,34 @@ entrypoints Design;
 
 Design. Design ::= [DeviceDecl] ;
 
-DeviceDecl. DeviceDecl ::= InstanceName "=" DeviceType "{" [Assignment] "}" ;
+DeviceDeclA. DeviceDecl ::= InstanceName "=" DeviceType "{" [Assignment] "}" ;
+DeviceTypeB. DeviceDecl ::= InstanceName "=" TwoPortDevice ";"
+
 terminator nonempty DeviceDecl ";";
+
 
 rules DeviceType ::= "Resistor" | "Capacitor" | "Inductance" | "Voltage";
 
+-- generic two-port device 
+TwoPortDevice. TwoPortDevice ::= "Device" "{" [ DeviceStatement ] "}";
+
+-- Device statement 
+DeviceStatement. DeviceStatement ::= Ident "=" Rvalue;
+terminator nonempty DeviceStatement ";";
+
+-- Device statements 
+DeviceStatement. DeviceStatement ::= InputOutputExpression | DeviceExpression;
+InputExpression. InputOutputExpression ::= "input" "=" PortExperssion;
+OutputExpression. InputOutputExpression ::= "output" "=" PortExperssion;
+DeviceExpression. DeviceExpression ::= LHS "=" RHS;
+LHS. LHS ::= FunctionExpression | Variable;
+RHS. RHS ::= Expression;
+FunctionExpression. FunctionExpression ::= FunctionName "(" Variable ")";
+Expression. Expression ::= Expression "+" Expression
+                           | Expression "-" Expression 
+                           | Expression "/" Expression 
+                           | Expression "*" Expression 
+                           ;
 -- Instance
 InstanceName. InstanceName ::= Ident;
 
