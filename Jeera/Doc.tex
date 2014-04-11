@@ -46,15 +46,18 @@ The set of reserved words is the set of terminals appearing in the grammar. Thos
 The reserved words used in Jeera are the following: \\
 
 \begin{tabular}{lll}
-{\reserved{Capacitor}} &{\reserved{Inductance}} &{\reserved{Resistor}} \\
-{\reserved{Voltage}} & & \\
+{\reserved{Capacitor}} &{\reserved{Device}} &{\reserved{Inductance}} \\
+{\reserved{Resistor}} &{\reserved{Voltage}} &{\reserved{input}} \\
+{\reserved{output}} & & \\
 \end{tabular}\\
 
 The symbols used in Jeera are the following: \\
 
 \begin{tabular}{lll}
-{\symb{{$=$}}} &{\symb{\{}} &{\symb{\}}} \\
-{\symb{;}} &{\symb{,}} & \\
+{\symb{;}} &{\symb{{$=$}}} &{\symb{\{}} \\
+{\symb{\}}} &{\symb{(}} &{\symb{)}} \\
+{\symb{{$+$}}} &{\symb{{$-$}}} &{\symb{/}} \\
+{\symb{*}} & & \\
 \end{tabular}\\
 
 \subsection*{Comments}
@@ -67,16 +70,25 @@ and {\emptyP} (empty rule) belong to the BNF notation.
 All other symbols are terminals.\\
 
 \begin{tabular}{lll}
-{\nonterminal{Design}} & {\arrow}  &{\nonterminal{ListDeviceDecl}}  \\
+{\nonterminal{Design}} & {\arrow}  &{\nonterminal{ListDesignStatement}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{DeviceDecl}} & {\arrow}  &{\nonterminal{InstanceName}} {\terminal{{$=$}}} {\nonterminal{DeviceType}} {\terminal{\{}} {\nonterminal{ListAssignment}} {\terminal{\}}}  \\
+{\nonterminal{DesignStatement}} & {\arrow}  &{\nonterminal{DeviceDecl}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{ListDeviceDecl}} & {\arrow}  &{\nonterminal{DeviceDecl}} {\terminal{;}}  \\
- & {\delimit}  &{\nonterminal{DeviceDecl}} {\terminal{;}} {\nonterminal{ListDeviceDecl}}  \\
+{\nonterminal{ListDesignStatement}} & {\arrow}  &{\nonterminal{DesignStatement}} {\terminal{;}}  \\
+ & {\delimit}  &{\nonterminal{DesignStatement}} {\terminal{;}} {\nonterminal{ListDesignStatement}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{DeviceDecl}} & {\arrow}  &{\nonterminal{InstanceName}} {\terminal{{$=$}}} {\nonterminal{SimpleDeviceExpr}} {\terminal{;}}  \\
+ & {\delimit}  &{\nonterminal{InstanceName}} {\terminal{{$=$}}} {\nonterminal{TwoPortDeviceExpr}} {\terminal{;}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{SimpleDeviceExpr}} & {\arrow}  &{\nonterminal{DeviceType}} {\terminal{\{}} {\nonterminal{ListDeviceStatement}} {\terminal{\}}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
@@ -87,23 +99,68 @@ All other symbols are terminals.\\
 \end{tabular}\\
 
 \begin{tabular}{lll}
+{\nonterminal{TwoPortDeviceExpr}} & {\arrow}  &{\terminal{Device}} {\terminal{\{}} {\nonterminal{ListDeviceStatement}} {\terminal{\}}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{DeviceStatement}} & {\arrow}  &{\nonterminal{InputOutputExpression}}  \\
+ & {\delimit}  &{\nonterminal{DeviceExpression}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListDeviceStatement}} & {\arrow}  &{\nonterminal{DeviceStatement}} {\terminal{;}}  \\
+ & {\delimit}  &{\nonterminal{DeviceStatement}} {\terminal{;}} {\nonterminal{ListDeviceStatement}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{InputOutputExpression}} & {\arrow}  &{\terminal{input}} {\terminal{{$=$}}} {\nonterminal{PortExperssion}}  \\
+ & {\delimit}  &{\terminal{output}} {\terminal{{$=$}}} {\nonterminal{PortExperssion}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{DeviceExpression}} & {\arrow}  &{\nonterminal{LHS}} {\terminal{{$=$}}} {\nonterminal{RHS}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{LHS}} & {\arrow}  &{\nonterminal{FunctionExpression}}  \\
+ & {\delimit}  &{\nonterminal{Variable}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{RHS}} & {\arrow}  &{\nonterminal{Expression}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{FunctionExpression}} & {\arrow}  &{\nonterminal{FunctionName}} {\terminal{(}} {\nonterminal{Variable}} {\terminal{)}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{Expression}} & {\arrow}  &{\nonterminal{Expression}} {\terminal{{$+$}}} {\nonterminal{Expression}}  \\
+ & {\delimit}  &{\nonterminal{Expression}} {\terminal{{$-$}}} {\nonterminal{Expression}}  \\
+ & {\delimit}  &{\nonterminal{Expression}} {\terminal{/}} {\nonterminal{Expression}}  \\
+ & {\delimit}  &{\nonterminal{Expression}} {\terminal{*}} {\nonterminal{Expression}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
 {\nonterminal{InstanceName}} & {\arrow}  &{\nonterminal{Ident}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{Assignment}} & {\arrow}  &{\nonterminal{Ident}} {\terminal{{$=$}}} {\nonterminal{Rvalue}}  \\
-\end{tabular}\\
-
-\begin{tabular}{lll}
-{\nonterminal{ListAssignment}} & {\arrow}  &{\nonterminal{Assignment}}  \\
- & {\delimit}  &{\nonterminal{Assignment}} {\terminal{,}} {\nonterminal{ListAssignment}}  \\
-\end{tabular}\\
-
-\begin{tabular}{lll}
-{\nonterminal{Rvalue}} & {\arrow}  &{\nonterminal{Ident}}  \\
- & {\delimit}  &{\nonterminal{Double}}  \\
+{\nonterminal{Rvalue}} & {\arrow}  &{\nonterminal{Double}}  \\
  & {\delimit}  &{\nonterminal{Ident}}  \\
  & {\delimit}  &{\nonterminal{Integer}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{PortExperssion}} & {\arrow}  &{\nonterminal{Expression}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{Variable}} & {\arrow}  &{\nonterminal{Ident}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{FunctionName}} & {\arrow}  &{\nonterminal{Ident}}  \\
 \end{tabular}\\
 
 

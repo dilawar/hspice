@@ -15,15 +15,23 @@ import Jeera.ErrM
 %tokentype { Token }
 
 %token 
- ',' { PT _ (TS _ 1) }
- ';' { PT _ (TS _ 2) }
- '=' { PT _ (TS _ 3) }
- 'Capacitor' { PT _ (TS _ 4) }
- 'Inductance' { PT _ (TS _ 5) }
- 'Resistor' { PT _ (TS _ 6) }
- 'Voltage' { PT _ (TS _ 7) }
- '{' { PT _ (TS _ 8) }
- '}' { PT _ (TS _ 9) }
+ '(' { PT _ (TS _ 1) }
+ ')' { PT _ (TS _ 2) }
+ '*' { PT _ (TS _ 3) }
+ '+' { PT _ (TS _ 4) }
+ '-' { PT _ (TS _ 5) }
+ '/' { PT _ (TS _ 6) }
+ ';' { PT _ (TS _ 7) }
+ '=' { PT _ (TS _ 8) }
+ 'Capacitor' { PT _ (TS _ 9) }
+ 'Device' { PT _ (TS _ 10) }
+ 'Inductance' { PT _ (TS _ 11) }
+ 'Resistor' { PT _ (TS _ 12) }
+ 'Voltage' { PT _ (TS _ 13) }
+ 'input' { PT _ (TS _ 14) }
+ 'output' { PT _ (TS _ 15) }
+ '{' { PT _ (TS _ 16) }
+ '}' { PT _ (TS _ 17) }
 
 L_ident  { PT _ (TV $$) }
 L_doubl  { PT _ (TD $$) }
@@ -38,16 +46,25 @@ Double  :: { Double }  : L_doubl  { (read ( $1)) :: Double }
 Integer :: { Integer } : L_integ  { (read ( $1)) :: Integer }
 
 Design :: { Design }
-Design : ListDeviceDecl { Design $1 } 
+Design : ListDesignStatement { Design $1 } 
+
+
+DesignStatement :: { DesignStatement }
+DesignStatement : DeviceDecl { DesignStatement $1 } 
+
+
+ListDesignStatement :: { [DesignStatement] }
+ListDesignStatement : DesignStatement ';' { (:[]) $1 } 
+  | DesignStatement ';' ListDesignStatement { (:) $1 $3 }
 
 
 DeviceDecl :: { DeviceDecl }
-DeviceDecl : InstanceName '=' DeviceType '{' ListAssignment '}' { DeviceDecl $1 $3 $5 } 
+DeviceDecl : InstanceName '=' SimpleDeviceExpr ';' { SimpleDevice $1 $3 } 
+  | InstanceName '=' TwoPortDeviceExpr ';' { TwoPortDevice $1 $3 }
 
 
-ListDeviceDecl :: { [DeviceDecl] }
-ListDeviceDecl : DeviceDecl ';' { (:[]) $1 } 
-  | DeviceDecl ';' ListDeviceDecl { (:) $1 $3 }
+SimpleDeviceExpr :: { SimpleDeviceExpr }
+SimpleDeviceExpr : DeviceType '{' ListDeviceStatement '}' { SimpleDeviceExpr $1 $3 } 
 
 
 DeviceType :: { DeviceType }
@@ -57,24 +74,69 @@ DeviceType : 'Resistor' { DeviceType_Resistor }
   | 'Voltage' { DeviceType_Voltage }
 
 
+TwoPortDeviceExpr :: { TwoPortDeviceExpr }
+TwoPortDeviceExpr : 'Device' '{' ListDeviceStatement '}' { TwoPortDeviceExpr $3 } 
+
+
+DeviceStatement :: { DeviceStatement }
+DeviceStatement : InputOutputExpression { DeviceStatementInputOutputExpression $1 } 
+  | DeviceExpression { DeviceStatementDeviceExpression $1 }
+
+
+ListDeviceStatement :: { [DeviceStatement] }
+ListDeviceStatement : DeviceStatement ';' { (:[]) $1 } 
+  | DeviceStatement ';' ListDeviceStatement { (:) $1 $3 }
+
+
+InputOutputExpression :: { InputOutputExpression }
+InputOutputExpression : 'input' '=' PortExperssion { InputExpression $3 } 
+  | 'output' '=' PortExperssion { OutputExpression $3 }
+
+
+DeviceExpression :: { DeviceExpression }
+DeviceExpression : LHS '=' RHS { DeviceExpression $1 $3 } 
+
+
+LHS :: { LHS }
+LHS : FunctionExpression { LHSFunctionExpression $1 } 
+  | Variable { LHSVariable $1 }
+
+
+RHS :: { RHS }
+RHS : Expression { RHS $1 } 
+
+
+FunctionExpression :: { FunctionExpression }
+FunctionExpression : FunctionName '(' Variable ')' { FunctionExpression $1 $3 } 
+
+
+Expression :: { Expression }
+Expression : Expression '+' Expression { Expression_1 $1 $3 } 
+  | Expression '-' Expression { Expression_2 $1 $3 }
+  | Expression '/' Expression { Expression_3 $1 $3 }
+  | Expression '*' Expression { Expression_4 $1 $3 }
+
+
 InstanceName :: { InstanceName }
 InstanceName : Ident { InstanceName $1 } 
 
 
-Assignment :: { Assignment }
-Assignment : Ident '=' Rvalue { Assignment $1 $3 } 
-
-
-ListAssignment :: { [Assignment] }
-ListAssignment : Assignment { (:[]) $1 } 
-  | Assignment ',' ListAssignment { (:) $1 $3 }
-
-
 Rvalue :: { Rvalue }
-Rvalue : Ident { RvalueIdent $1 } 
-  | Double { RvalueDouble $1 }
+Rvalue : Double { RvalueDouble $1 } 
   | Ident { RvalueIdent $1 }
   | Integer { RvalueInteger $1 }
+
+
+PortExperssion :: { PortExperssion }
+PortExperssion : Expression { PortExperssion $1 } 
+
+
+Variable :: { Variable }
+Variable : Ident { Variable $1 } 
+
+
+FunctionName :: { FunctionName }
+FunctionName : Ident { FunctionName $1 } 
 
 
 

@@ -85,16 +85,27 @@ instance Print Ident where
 
 instance Print Design where
   prt i e = case e of
-   Design devicedecls -> prPrec i 0 (concatD [prt 0 devicedecls])
+   Design designstatements -> prPrec i 0 (concatD [prt 0 designstatements])
 
 
-instance Print DeviceDecl where
+instance Print DesignStatement where
   prt i e = case e of
-   DeviceDecl instancename devicetype assignments -> prPrec i 0 (concatD [prt 0 instancename , doc (showString "=") , prt 0 devicetype , doc (showString "{") , prt 0 assignments , doc (showString "}")])
+   DesignStatement devicedecl -> prPrec i 0 (concatD [prt 0 devicedecl])
 
   prtList es = case es of
    [x] -> (concatD [prt 0 x , doc (showString ";")])
    x:xs -> (concatD [prt 0 x , doc (showString ";") , prt 0 xs])
+
+instance Print DeviceDecl where
+  prt i e = case e of
+   SimpleDevice instancename simpledeviceexpr -> prPrec i 0 (concatD [prt 0 instancename , doc (showString "=") , prt 0 simpledeviceexpr , doc (showString ";")])
+   TwoPortDevice instancename twoportdeviceexpr -> prPrec i 0 (concatD [prt 0 instancename , doc (showString "=") , prt 0 twoportdeviceexpr , doc (showString ";")])
+
+
+instance Print SimpleDeviceExpr where
+  prt i e = case e of
+   SimpleDeviceExpr devicetype devicestatements -> prPrec i 0 (concatD [prt 0 devicetype , doc (showString "{") , prt 0 devicestatements , doc (showString "}")])
+
 
 instance Print DeviceType where
   prt i e = case e of
@@ -104,24 +115,80 @@ instance Print DeviceType where
    DeviceType_Voltage  -> prPrec i 0 (concatD [doc (showString "Voltage")])
 
 
+instance Print TwoPortDeviceExpr where
+  prt i e = case e of
+   TwoPortDeviceExpr devicestatements -> prPrec i 0 (concatD [doc (showString "Device") , doc (showString "{") , prt 0 devicestatements , doc (showString "}")])
+
+
+instance Print DeviceStatement where
+  prt i e = case e of
+   DeviceStatementInputOutputExpression inputoutputexpression -> prPrec i 0 (concatD [prt 0 inputoutputexpression])
+   DeviceStatementDeviceExpression deviceexpression -> prPrec i 0 (concatD [prt 0 deviceexpression])
+
+  prtList es = case es of
+   [x] -> (concatD [prt 0 x , doc (showString ";")])
+   x:xs -> (concatD [prt 0 x , doc (showString ";") , prt 0 xs])
+
+instance Print InputOutputExpression where
+  prt i e = case e of
+   InputExpression portexperssion -> prPrec i 0 (concatD [doc (showString "input") , doc (showString "=") , prt 0 portexperssion])
+   OutputExpression portexperssion -> prPrec i 0 (concatD [doc (showString "output") , doc (showString "=") , prt 0 portexperssion])
+
+
+instance Print DeviceExpression where
+  prt i e = case e of
+   DeviceExpression lhs rhs -> prPrec i 0 (concatD [prt 0 lhs , doc (showString "=") , prt 0 rhs])
+
+
+instance Print LHS where
+  prt i e = case e of
+   LHSFunctionExpression functionexpression -> prPrec i 0 (concatD [prt 0 functionexpression])
+   LHSVariable variable -> prPrec i 0 (concatD [prt 0 variable])
+
+
+instance Print RHS where
+  prt i e = case e of
+   RHS expression -> prPrec i 0 (concatD [prt 0 expression])
+
+
+instance Print FunctionExpression where
+  prt i e = case e of
+   FunctionExpression functionname variable -> prPrec i 0 (concatD [prt 0 functionname , doc (showString "(") , prt 0 variable , doc (showString ")")])
+
+
+instance Print Expression where
+  prt i e = case e of
+   Expression_1 expression0 expression -> prPrec i 0 (concatD [prt 0 expression0 , doc (showString "+") , prt 0 expression])
+   Expression_2 expression0 expression -> prPrec i 0 (concatD [prt 0 expression0 , doc (showString "-") , prt 0 expression])
+   Expression_3 expression0 expression -> prPrec i 0 (concatD [prt 0 expression0 , doc (showString "/") , prt 0 expression])
+   Expression_4 expression0 expression -> prPrec i 0 (concatD [prt 0 expression0 , doc (showString "*") , prt 0 expression])
+
+
 instance Print InstanceName where
   prt i e = case e of
    InstanceName id -> prPrec i 0 (concatD [prt 0 id])
 
 
-instance Print Assignment where
-  prt i e = case e of
-   Assignment id rvalue -> prPrec i 0 (concatD [prt 0 id , doc (showString "=") , prt 0 rvalue])
-
-  prtList es = case es of
-   [x] -> (concatD [prt 0 x])
-   x:xs -> (concatD [prt 0 x , doc (showString ",") , prt 0 xs])
-
 instance Print Rvalue where
   prt i e = case e of
-   RvalueIdent id -> prPrec i 0 (concatD [prt 0 id])
    RvalueDouble d -> prPrec i 0 (concatD [prt 0 d])
+   RvalueIdent id -> prPrec i 0 (concatD [prt 0 id])
    RvalueInteger n -> prPrec i 0 (concatD [prt 0 n])
+
+
+instance Print PortExperssion where
+  prt i e = case e of
+   PortExperssion expression -> prPrec i 0 (concatD [prt 0 expression])
+
+
+instance Print Variable where
+  prt i e = case e of
+   Variable id -> prPrec i 0 (concatD [prt 0 id])
+
+
+instance Print FunctionName where
+  prt i e = case e of
+   FunctionName id -> prPrec i 0 (concatD [prt 0 id])
 
 
 

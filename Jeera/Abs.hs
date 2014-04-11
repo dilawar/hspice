@@ -5,11 +5,20 @@ module Jeera.Abs where
 
 newtype Ident = Ident String deriving (Eq,Ord,Show)
 data Design =
-   Design [DeviceDecl]
+   Design [DesignStatement]
+  deriving (Eq,Ord,Show)
+
+data DesignStatement =
+   DesignStatement DeviceDecl
   deriving (Eq,Ord,Show)
 
 data DeviceDecl =
-   DeviceDecl InstanceName DeviceType [Assignment]
+   SimpleDevice InstanceName SimpleDeviceExpr
+ | TwoPortDevice InstanceName TwoPortDeviceExpr
+  deriving (Eq,Ord,Show)
+
+data SimpleDeviceExpr =
+   SimpleDeviceExpr DeviceType [DeviceStatement]
   deriving (Eq,Ord,Show)
 
 data DeviceType =
@@ -19,17 +28,63 @@ data DeviceType =
  | DeviceType_Voltage
   deriving (Eq,Ord,Show)
 
+data TwoPortDeviceExpr =
+   TwoPortDeviceExpr [DeviceStatement]
+  deriving (Eq,Ord,Show)
+
+data DeviceStatement =
+   DeviceStatementInputOutputExpression InputOutputExpression
+ | DeviceStatementDeviceExpression DeviceExpression
+  deriving (Eq,Ord,Show)
+
+data InputOutputExpression =
+   InputExpression PortExperssion
+ | OutputExpression PortExperssion
+  deriving (Eq,Ord,Show)
+
+data DeviceExpression =
+   DeviceExpression LHS RHS
+  deriving (Eq,Ord,Show)
+
+data LHS =
+   LHSFunctionExpression FunctionExpression
+ | LHSVariable Variable
+  deriving (Eq,Ord,Show)
+
+data RHS =
+   RHS Expression
+  deriving (Eq,Ord,Show)
+
+data FunctionExpression =
+   FunctionExpression FunctionName Variable
+  deriving (Eq,Ord,Show)
+
+data Expression =
+   Expression_1 Expression Expression
+ | Expression_2 Expression Expression
+ | Expression_3 Expression Expression
+ | Expression_4 Expression Expression
+  deriving (Eq,Ord,Show)
+
 data InstanceName =
    InstanceName Ident
   deriving (Eq,Ord,Show)
 
-data Assignment =
-   Assignment Ident Rvalue
+data Rvalue =
+   RvalueDouble Double
+ | RvalueIdent Ident
+ | RvalueInteger Integer
   deriving (Eq,Ord,Show)
 
-data Rvalue =
-   RvalueIdent Ident
- | RvalueDouble Double
- | RvalueInteger Integer
+data PortExperssion =
+   PortExperssion Expression
+  deriving (Eq,Ord,Show)
+
+data Variable =
+   Variable Ident
+  deriving (Eq,Ord,Show)
+
+data FunctionName =
+   FunctionName Ident
   deriving (Eq,Ord,Show)
 

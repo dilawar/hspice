@@ -1,33 +1,34 @@
 {- This is BNF grammar -}
-
 entrypoints Design;
 
-Design. Design ::= [DeviceDecl] ;
+Design. Design ::= [DesignStatement] ;
+DesignStatement. DesignStatement ::= DeviceDecl;
+terminator nonempty DesignStatement ";";
 
-DeviceDeclA. DeviceDecl ::= InstanceName "=" DeviceType "{" [Assignment] "}" ;
-DeviceTypeB. DeviceDecl ::= InstanceName "=" TwoPortDevice ";"
+SimpleDevice. DeviceDecl ::= InstanceName "=" SimpleDeviceExpr ";";
+TwoPortDevice. DeviceDecl ::= InstanceName "=" TwoPortDeviceExpr ";";
 
-terminator nonempty DeviceDecl ";";
-
+SimpleDeviceExpr. SimpleDeviceExpr ::= DeviceType "{" [DeviceStatement] "}" ;
 
 rules DeviceType ::= "Resistor" | "Capacitor" | "Inductance" | "Voltage";
 
 -- generic two-port device 
-TwoPortDevice. TwoPortDevice ::= "Device" "{" [ DeviceStatement ] "}";
-
--- Device statement 
-DeviceStatement. DeviceStatement ::= Ident "=" Rvalue;
-terminator nonempty DeviceStatement ";";
+TwoPortDeviceExpr. TwoPortDeviceExpr ::= "Device" "{" [DeviceStatement] "}";
 
 -- Device statements 
-DeviceStatement. DeviceStatement ::= InputOutputExpression | DeviceExpression;
+rules DeviceStatement ::= InputOutputExpression | DeviceExpression;
+terminator nonempty DeviceStatement ";";
+
 InputExpression. InputOutputExpression ::= "input" "=" PortExperssion;
 OutputExpression. InputOutputExpression ::= "output" "=" PortExperssion;
+
 DeviceExpression. DeviceExpression ::= LHS "=" RHS;
-LHS. LHS ::= FunctionExpression | Variable;
+
+rules LHS ::= FunctionExpression | Variable;
 RHS. RHS ::= Expression;
+
 FunctionExpression. FunctionExpression ::= FunctionName "(" Variable ")";
-Expression. Expression ::= Expression "+" Expression
+rules Expression ::= Expression "+" Expression
                            | Expression "-" Expression 
                            | Expression "/" Expression 
                            | Expression "*" Expression 
@@ -35,11 +36,16 @@ Expression. Expression ::= Expression "+" Expression
 -- Instance
 InstanceName. InstanceName ::= Ident;
 
--- Assignment rule
-Assignment. Assignment ::= Ident "=" Rvalue;
-separator nonempty Assignment ";";
+rules Rvalue ::= Double | Ident | Integer; 
 
-rules Rvalue ::= Ident | Double | Ident | Integer; 
+-- Ports 
+PortExperssion. PortExperssion ::= Expression;
+
+-- Variable
+Variable. Variable ::= Ident;
+
+-- Function name 
+FunctionName. FunctionName ::= Ident;
 
 -- comments 
 comment "//";

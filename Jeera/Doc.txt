@@ -32,11 +32,13 @@ Integer literals //Integer// are nonempty sequences of digits.
 The set of reserved words is the set of terminals appearing in the grammar. Those reserved words that consist of non-letter characters are called symbols, and they are treated in a different way from those that are similar to identifiers. The lexer follows rules familiar from languages like Haskell, C, and Java, including longest match and spacing conventions.
 
 The reserved words used in Jeera are the following:
-  | ``Capacitor`` | ``Inductance`` | ``Resistor`` | ``Voltage``
+  | ``Capacitor`` | ``Device`` | ``Inductance`` | ``Resistor``
+  | ``Voltage`` | ``input`` | ``output`` | 
 
 The symbols used in Jeera are the following:
-  | = | { | } | ;
-  | , |  |  | 
+  | ; | = | { | }
+  | ( | ) | + | -
+  | / | * |  | 
 
 ===Comments===
 Single-line comments begin with //.Multiple-line comments are  enclosed with /* and */.
@@ -47,21 +49,39 @@ The symbols -> (production),  **|**  (union)
 and **eps** (empty rule) belong to the BNF notation. 
 All other symbols are terminals.
 
-  | //Design// | -> | //[DeviceDecl]// 
-  | //DeviceDecl// | -> | //InstanceName// ``=`` //DeviceType// ``{`` //[Assignment]// ``}`` 
-  | //[DeviceDecl]// | -> | //DeviceDecl// ``;`` 
-  |  |  **|**  | //DeviceDecl// ``;`` //[DeviceDecl]// 
+  | //Design// | -> | //[DesignStatement]// 
+  | //DesignStatement// | -> | //DeviceDecl// 
+  | //[DesignStatement]// | -> | //DesignStatement// ``;`` 
+  |  |  **|**  | //DesignStatement// ``;`` //[DesignStatement]// 
+  | //DeviceDecl// | -> | //InstanceName// ``=`` //SimpleDeviceExpr// ``;`` 
+  |  |  **|**  | //InstanceName// ``=`` //TwoPortDeviceExpr// ``;`` 
+  | //SimpleDeviceExpr// | -> | //DeviceType// ``{`` //[DeviceStatement]// ``}`` 
   | //DeviceType// | -> | ``Resistor`` 
   |  |  **|**  | ``Capacitor`` 
   |  |  **|**  | ``Inductance`` 
   |  |  **|**  | ``Voltage`` 
+  | //TwoPortDeviceExpr// | -> | ``Device`` ``{`` //[DeviceStatement]// ``}`` 
+  | //DeviceStatement// | -> | //InputOutputExpression// 
+  |  |  **|**  | //DeviceExpression// 
+  | //[DeviceStatement]// | -> | //DeviceStatement// ``;`` 
+  |  |  **|**  | //DeviceStatement// ``;`` //[DeviceStatement]// 
+  | //InputOutputExpression// | -> | ``input`` ``=`` //PortExperssion// 
+  |  |  **|**  | ``output`` ``=`` //PortExperssion// 
+  | //DeviceExpression// | -> | //LHS// ``=`` //RHS// 
+  | //LHS// | -> | //FunctionExpression// 
+  |  |  **|**  | //Variable// 
+  | //RHS// | -> | //Expression// 
+  | //FunctionExpression// | -> | //FunctionName// ``(`` //Variable// ``)`` 
+  | //Expression// | -> | //Expression// ``+`` //Expression// 
+  |  |  **|**  | //Expression// ``-`` //Expression// 
+  |  |  **|**  | //Expression// ``/`` //Expression// 
+  |  |  **|**  | //Expression// ``*`` //Expression// 
   | //InstanceName// | -> | //Ident// 
-  | //Assignment// | -> | //Ident// ``=`` //Rvalue// 
-  | //[Assignment]// | -> | //Assignment// 
-  |  |  **|**  | //Assignment// ``,`` //[Assignment]// 
-  | //Rvalue// | -> | //Ident// 
-  |  |  **|**  | //Double// 
+  | //Rvalue// | -> | //Double// 
   |  |  **|**  | //Ident// 
   |  |  **|**  | //Integer// 
+  | //PortExperssion// | -> | //Expression// 
+  | //Variable// | -> | //Ident// 
+  | //FunctionName// | -> | //Ident// 
 
 
