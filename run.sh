@@ -2,5 +2,7 @@
 set +e
 make clean
 bnfc -m -haskell -d Jeera.cf
-make 
-./Jeera/Test < example.cir
+if [[ $1 ]]; then
+    make 
+    ./Jeera/Test < example.cir
+fi

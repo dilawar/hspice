@@ -14,106 +14,46 @@ transIdent x = case x of
   Ident str  -> failure x
 
 
-transDesign :: Design -> Result
-transDesign x = case x of
-  Design designstatements  -> failure x
+transProgram :: Program -> Result
+transProgram x = case x of
+  Program statements  -> failure x
 
 
-transDesignStatement :: DesignStatement -> Result
-transDesignStatement x = case x of
-  DesignStatement devicedecl  -> failure x
+transStatement :: Statement -> Result
+transStatement x = case x of
+  DeviceDecl devicedecl  -> failure x
 
 
 transDeviceDecl :: DeviceDecl -> Result
 transDeviceDecl x = case x of
-  SimpleDevice instancename simpledeviceexpr  -> failure x
-  TwoPortDevice instancename twoportdeviceexpr  -> failure x
+  SimpleDevice instancename simpledevicetype devicestatements  -> failure x
 
 
-transSimpleDeviceExpr :: SimpleDeviceExpr -> Result
-transSimpleDeviceExpr x = case x of
-  SimpleDeviceExpr devicetype devicestatements  -> failure x
-
-
-transDeviceType :: DeviceType -> Result
-transDeviceType x = case x of
-  DeviceType_Resistor  -> failure x
-  DeviceType_Capacitor  -> failure x
-  DeviceType_Inductance  -> failure x
-  DeviceType_Voltage  -> failure x
-
-
-transTwoPortDeviceExpr :: TwoPortDeviceExpr -> Result
-transTwoPortDeviceExpr x = case x of
-  TwoPortDeviceExpr devicestatements  -> failure x
+transSimpleDeviceType :: SimpleDeviceType -> Result
+transSimpleDeviceType x = case x of
+  Resistor  -> failure x
+  Inductor  -> failure x
 
 
 transDeviceStatement :: DeviceStatement -> Result
 transDeviceStatement x = case x of
-  DeviceStatementInputOutputExpression inputoutputexpression  -> failure x
-  DeviceStatementDeviceExpression deviceexpression  -> failure x
+  DeviceStatement lhsexpression rhsexpression  -> failure x
 
 
-transInputOutputExpression :: InputOutputExpression -> Result
-transInputOutputExpression x = case x of
-  InputExpression portexperssion  -> failure x
-  OutputExpression portexperssion  -> failure x
+transLHSExpression :: LHSExpression -> Result
+transLHSExpression x = case x of
+  LHSExpression id  -> failure x
 
 
-transDeviceExpression :: DeviceExpression -> Result
-transDeviceExpression x = case x of
-  DeviceExpression lhs rhs  -> failure x
-
-
-transLHS :: LHS -> Result
-transLHS x = case x of
-  LHSFunctionExpression functionexpression  -> failure x
-  LHSVariable variable  -> failure x
-
-
-transRHS :: RHS -> Result
-transRHS x = case x of
-  RHS expression  -> failure x
-
-
-transFunctionExpression :: FunctionExpression -> Result
-transFunctionExpression x = case x of
-  FunctionExpression functionname variable  -> failure x
-
-
-transExpression :: Expression -> Result
-transExpression x = case x of
-  Expression_1 expression1 expression2  -> failure x
-  Expression_2 expression1 expression2  -> failure x
-  Expression_3 expression1 expression2  -> failure x
-  Expression_4 expression1 expression2  -> failure x
+transRHSExpression :: RHSExpression -> Result
+transRHSExpression x = case x of
+  RHSExpressionInteger n  -> failure x
+  RHSExpressionDouble d  -> failure x
 
 
 transInstanceName :: InstanceName -> Result
 transInstanceName x = case x of
   InstanceName id  -> failure x
-
-
-transRvalue :: Rvalue -> Result
-transRvalue x = case x of
-  RvalueDouble d  -> failure x
-  RvalueIdent id  -> failure x
-  RvalueInteger n  -> failure x
-
-
-transPortExperssion :: PortExperssion -> Result
-transPortExperssion x = case x of
-  PortExperssion expression  -> failure x
-
-
-transVariable :: Variable -> Result
-transVariable x = case x of
-  Variable id  -> failure x
-
-
-transFunctionName :: FunctionName -> Result
-transFunctionName x = case x of
-  FunctionName id  -> failure x
 
 
 

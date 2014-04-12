@@ -1,51 +1,39 @@
 {- This is BNF grammar -}
-entrypoints Design;
+entrypoints Program;
+Program. Program ::= [Statement];
+terminator nonempty Statement ";";
 
-Design. Design ::= [DesignStatement] ;
-DesignStatement. DesignStatement ::= DeviceDecl;
-terminator nonempty DesignStatement ";";
+DeviceDecl. Statement ::= DeviceDecl;
+-- Connection. Statement ::= Connection;
 
-SimpleDevice. DeviceDecl ::= InstanceName "=" SimpleDeviceExpr ";";
-TwoPortDevice. DeviceDecl ::= InstanceName "=" TwoPortDeviceExpr ";";
+-- Declare device
+SimpleDevice. DeviceDecl ::= InstanceName "=" SimpleDeviceType "{" [DeviceStatement] "}";
 
-SimpleDeviceExpr. SimpleDeviceExpr ::= DeviceType "{" [DeviceStatement] "}" ;
+-- Device types
+Resistor. SimpleDeviceType ::= "Resistor";
+Inductor. SimpleDeviceType ::= "Inductor";
 
-rules DeviceType ::= "Resistor" | "Capacitor" | "Inductance" | "Voltage";
-
--- generic two-port device 
-TwoPortDeviceExpr. TwoPortDeviceExpr ::= "Device" "{" [DeviceStatement] "}";
-
--- Device statements 
-rules DeviceStatement ::= InputOutputExpression | DeviceExpression;
+-- Device statement
+DeviceStatement. DeviceStatement ::= LHSExpression "=" RHSExpression;
 terminator nonempty DeviceStatement ";";
 
-InputExpression. InputOutputExpression ::= "input" "=" PortExperssion;
-OutputExpression. InputOutputExpression ::= "output" "=" PortExperssion;
+LHSExpression. LHSExpression ::= Ident;
 
-DeviceExpression. DeviceExpression ::= LHS "=" RHS;
+rules RHSExpression ::= SimpleExpression | Expression;
+SimpleExpression. SimpleExpression ::= Double | Integer;
+rules Expression ::= PortExpression | MathExpression;
 
-rules LHS ::= FunctionExpression | Variable;
-RHS. RHS ::= Expression;
+PortExpression. PortExpression ::= "(" Indet, Ident ")";
+MathExpression. MathExpression ::= Ident;
 
-FunctionExpression. FunctionExpression ::= FunctionName "(" Variable ")";
-rules Expression ::= Expression "+" Expression
-                           | Expression "-" Expression 
-                           | Expression "/" Expression 
-                           | Expression "*" Expression 
-                           ;
--- Instance
+
+-- Instance name 
 InstanceName. InstanceName ::= Ident;
 
-rules Rvalue ::= Double | Ident | Integer; 
 
--- Ports 
-PortExperssion. PortExperssion ::= Expression;
+-- Declare connections
 
--- Variable
-Variable. Variable ::= Ident;
 
--- Function name 
-FunctionName. FunctionName ::= Ident;
 
 -- comments 
 comment "//";

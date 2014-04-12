@@ -19,7 +19,7 @@ $i = [$l $d _ ']          -- identifier character
 $u = [\0-\255]          -- universal: any character
 
 @rsyms =    -- symbols and non-identifier-like reserved words
-   \; | \= | \{ | \} | \( | \) | \+ | \- | \/ | \*
+   \; | \= | \{ | \}
 
 :-
 "//" [.]* ; -- Toss single line comments
@@ -85,7 +85,7 @@ eitherResIdent tv s = treeFind resWords
                               | s > a  = treeFind right
                               | s == a = t
 
-resWords = b "Capacitor" 9 (b "-" 5 (b "*" 3 (b ")" 2 (b "(" 1 N N) N) (b "+" 4 N N)) (b ";" 7 (b "/" 6 N N) (b "=" 8 N N))) (b "input" 14 (b "Resistor" 12 (b "Inductance" 11 (b "Device" 10 N N) N) (b "Voltage" 13 N N)) (b "{" 16 (b "output" 15 N N) (b "}" 17 N N)))
+resWords = b "Resistor" 4 (b "=" 2 (b ";" 1 N N) (b "Inductor" 3 N N)) (b "}" 6 (b "{" 5 N N) N)
    where b s n = let bs = id s
                   in B bs (TS bs n)
 

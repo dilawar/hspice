@@ -17,13 +17,13 @@ reserved words excluded.
 
 
 ===Literals===
+Integer literals //Integer// are nonempty sequences of digits.
+
+
 Double-precision float literals //Double// have the structure
 indicated by the regular expression ``digit+ '.' digit+ ('e' ('-')? digit+)?`` i.e.\
 two sequences of digits separated by a decimal point, optionally
 followed by an unsigned or negative exponent.
-
-
-Integer literals //Integer// are nonempty sequences of digits.
 
 
 
@@ -32,13 +32,10 @@ Integer literals //Integer// are nonempty sequences of digits.
 The set of reserved words is the set of terminals appearing in the grammar. Those reserved words that consist of non-letter characters are called symbols, and they are treated in a different way from those that are similar to identifiers. The lexer follows rules familiar from languages like Haskell, C, and Java, including longest match and spacing conventions.
 
 The reserved words used in Jeera are the following:
-  | ``Capacitor`` | ``Device`` | ``Inductance`` | ``Resistor``
-  | ``Voltage`` | ``input`` | ``output`` | 
+  | ``Inductor`` | ``Resistor`` |  | 
 
 The symbols used in Jeera are the following:
   | ; | = | { | }
-  | ( | ) | + | -
-  | / | * |  | 
 
 ===Comments===
 Single-line comments begin with //.Multiple-line comments are  enclosed with /* and */.
@@ -49,39 +46,19 @@ The symbols -> (production),  **|**  (union)
 and **eps** (empty rule) belong to the BNF notation. 
 All other symbols are terminals.
 
-  | //Design// | -> | //[DesignStatement]// 
-  | //DesignStatement// | -> | //DeviceDecl// 
-  | //[DesignStatement]// | -> | //DesignStatement// ``;`` 
-  |  |  **|**  | //DesignStatement// ``;`` //[DesignStatement]// 
-  | //DeviceDecl// | -> | //InstanceName// ``=`` //SimpleDeviceExpr// ``;`` 
-  |  |  **|**  | //InstanceName// ``=`` //TwoPortDeviceExpr// ``;`` 
-  | //SimpleDeviceExpr// | -> | //DeviceType// ``{`` //[DeviceStatement]// ``}`` 
-  | //DeviceType// | -> | ``Resistor`` 
-  |  |  **|**  | ``Capacitor`` 
-  |  |  **|**  | ``Inductance`` 
-  |  |  **|**  | ``Voltage`` 
-  | //TwoPortDeviceExpr// | -> | ``Device`` ``{`` //[DeviceStatement]// ``}`` 
-  | //DeviceStatement// | -> | //InputOutputExpression// 
-  |  |  **|**  | //DeviceExpression// 
+  | //Program// | -> | //[Statement]// 
+  | //[Statement]// | -> | //Statement// ``;`` 
+  |  |  **|**  | //Statement// ``;`` //[Statement]// 
+  | //Statement// | -> | //DeviceDecl// 
+  | //DeviceDecl// | -> | //InstanceName// ``=`` //SimpleDeviceType// ``{`` //[DeviceStatement]// ``}`` 
+  | //SimpleDeviceType// | -> | ``Resistor`` 
+  |  |  **|**  | ``Inductor`` 
+  | //DeviceStatement// | -> | //LHSExpression// ``=`` //RHSExpression// 
   | //[DeviceStatement]// | -> | //DeviceStatement// ``;`` 
   |  |  **|**  | //DeviceStatement// ``;`` //[DeviceStatement]// 
-  | //InputOutputExpression// | -> | ``input`` ``=`` //PortExperssion// 
-  |  |  **|**  | ``output`` ``=`` //PortExperssion// 
-  | //DeviceExpression// | -> | //LHS// ``=`` //RHS// 
-  | //LHS// | -> | //FunctionExpression// 
-  |  |  **|**  | //Variable// 
-  | //RHS// | -> | //Expression// 
-  | //FunctionExpression// | -> | //FunctionName// ``(`` //Variable// ``)`` 
-  | //Expression// | -> | //Expression// ``+`` //Expression// 
-  |  |  **|**  | //Expression// ``-`` //Expression// 
-  |  |  **|**  | //Expression// ``/`` //Expression// 
-  |  |  **|**  | //Expression// ``*`` //Expression// 
+  | //LHSExpression// | -> | //Ident// 
+  | //RHSExpression// | -> | //Integer// 
+  |  |  **|**  | //Double// 
   | //InstanceName// | -> | //Ident// 
-  | //Rvalue// | -> | //Double// 
-  |  |  **|**  | //Ident// 
-  |  |  **|**  | //Integer// 
-  | //PortExperssion// | -> | //Expression// 
-  | //Variable// | -> | //Ident// 
-  | //FunctionName// | -> | //Ident// 
 
 

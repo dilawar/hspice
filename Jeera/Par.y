@@ -8,79 +8,56 @@ import Jeera.ErrM
 
 }
 
-%name pDesign Design
+%name pProgram Program
 
 -- no lexer declaration
 %monad { Err } { thenM } { returnM }
 %tokentype { Token }
 
 %token 
- '(' { PT _ (TS _ 1) }
- ')' { PT _ (TS _ 2) }
- '*' { PT _ (TS _ 3) }
- '+' { PT _ (TS _ 4) }
- '-' { PT _ (TS _ 5) }
- '/' { PT _ (TS _ 6) }
- ';' { PT _ (TS _ 7) }
- '=' { PT _ (TS _ 8) }
- 'Capacitor' { PT _ (TS _ 9) }
- 'Device' { PT _ (TS _ 10) }
- 'Inductance' { PT _ (TS _ 11) }
- 'Resistor' { PT _ (TS _ 12) }
- 'Voltage' { PT _ (TS _ 13) }
- 'input' { PT _ (TS _ 14) }
- 'output' { PT _ (TS _ 15) }
- '{' { PT _ (TS _ 16) }
- '}' { PT _ (TS _ 17) }
+ ';' { PT _ (TS _ 1) }
+ '=' { PT _ (TS _ 2) }
+ 'Inductor' { PT _ (TS _ 3) }
+ 'Resistor' { PT _ (TS _ 4) }
+ '{' { PT _ (TS _ 5) }
+ '}' { PT _ (TS _ 6) }
 
 L_ident  { PT _ (TV $$) }
-L_doubl  { PT _ (TD $$) }
 L_integ  { PT _ (TI $$) }
+L_doubl  { PT _ (TD $$) }
 L_err    { _ }
 
 
 %%
 
 Ident   :: { Ident }   : L_ident  { Ident $1 }
-Double  :: { Double }  : L_doubl  { (read ( $1)) :: Double }
 Integer :: { Integer } : L_integ  { (read ( $1)) :: Integer }
+Double  :: { Double }  : L_doubl  { (read ( $1)) :: Double }
 
-Design :: { Design }
-Design : ListDesignStatement { Design $1 } 
-
-
-DesignStatement :: { DesignStatement }
-DesignStatement : DeviceDecl { DesignStatement $1 } 
+Program :: { Program }
+Program : ListStatement { Program $1 } 
 
 
-ListDesignStatement :: { [DesignStatement] }
-ListDesignStatement : DesignStatement ';' { (:[]) $1 } 
-  | DesignStatement ';' ListDesignStatement { (:) $1 $3 }
+ListStatement :: { [Statement] }
+ListStatement : Statement ';' { (:[]) $1 } 
+  | Statement ';' ListStatement { (:) $1 $3 }
+
+
+Statement :: { Statement }
+Statement : DeviceDecl { DeviceDecl $1 } 
 
 
 DeviceDecl :: { DeviceDecl }
-DeviceDecl : InstanceName '=' SimpleDeviceExpr ';' { SimpleDevice $1 $3 } 
-  | InstanceName '=' TwoPortDeviceExpr ';' { TwoPortDevice $1 $3 }
+DeviceDecl : InstanceName '=' SimpleDeviceType '{' ListDeviceStatement '}' { SimpleDevice $1 $3 $5 } 
 
 
-SimpleDeviceExpr :: { SimpleDeviceExpr }
-SimpleDeviceExpr : DeviceType '{' ListDeviceStatement '}' { SimpleDeviceExpr $1 $3 } 
-
-
-DeviceType :: { DeviceType }
-DeviceType : 'Resistor' { DeviceType_Resistor } 
-  | 'Capacitor' { DeviceType_Capacitor }
-  | 'Inductance' { DeviceType_Inductance }
-  | 'Voltage' { DeviceType_Voltage }
-
-
-TwoPortDeviceExpr :: { TwoPortDeviceExpr }
-TwoPortDeviceExpr : 'Device' '{' ListDeviceStatement '}' { TwoPortDeviceExpr $3 } 
+SimpleDeviceType :: { SimpleDeviceType }
+SimpleDeviceType : 'Resistor' { Resistor } 
+  | 'Inductor' { Inductor }
 
 
 DeviceStatement :: { DeviceStatement }
-DeviceStatement : InputOutputExpression { DeviceStatementInputOutputExpression $1 } 
-  | DeviceExpression { DeviceStatementDeviceExpression $1 }
+DeviceStatement : LHSExpression '=' RHSExpression { DeviceStatement $1 $3 } 
 
 
 ListDeviceStatement :: { [DeviceStatement] }
@@ -88,55 +65,17 @@ ListDeviceStatement : DeviceStatement ';' { (:[]) $1 }
   | DeviceStatement ';' ListDeviceStatement { (:) $1 $3 }
 
 
-InputOutputExpression :: { InputOutputExpression }
-InputOutputExpression : 'input' '=' PortExperssion { InputExpression $3 } 
-  | 'output' '=' PortExperssion { OutputExpression $3 }
+LHSExpression :: { LHSExpression }
+LHSExpression : Ident { LHSExpression $1 } 
 
 
-DeviceExpression :: { DeviceExpression }
-DeviceExpression : LHS '=' RHS { DeviceExpression $1 $3 } 
-
-
-LHS :: { LHS }
-LHS : FunctionExpression { LHSFunctionExpression $1 } 
-  | Variable { LHSVariable $1 }
-
-
-RHS :: { RHS }
-RHS : Expression { RHS $1 } 
-
-
-FunctionExpression :: { FunctionExpression }
-FunctionExpression : FunctionName '(' Variable ')' { FunctionExpression $1 $3 } 
-
-
-Expression :: { Expression }
-Expression : Expression '+' Expression { Expression_1 $1 $3 } 
-  | Expression '-' Expression { Expression_2 $1 $3 }
-  | Expression '/' Expression { Expression_3 $1 $3 }
-  | Expression '*' Expression { Expression_4 $1 $3 }
+RHSExpression :: { RHSExpression }
+RHSExpression : Integer { RHSExpressionInteger $1 } 
+  | Double { RHSExpressionDouble $1 }
 
 
 InstanceName :: { InstanceName }
 InstanceName : Ident { InstanceName $1 } 
-
-
-Rvalue :: { Rvalue }
-Rvalue : Double { RvalueDouble $1 } 
-  | Ident { RvalueIdent $1 }
-  | Integer { RvalueInteger $1 }
-
-
-PortExperssion :: { PortExperssion }
-PortExperssion : Expression { PortExperssion $1 } 
-
-
-Variable :: { Variable }
-Variable : Ident { Variable $1 } 
-
-
-FunctionName :: { FunctionName }
-FunctionName : Ident { FunctionName $1 } 
 
 
 

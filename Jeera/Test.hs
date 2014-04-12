@@ -48,9 +48,9 @@ showTree v tree
 main :: IO ()
 main = do args <- getArgs
           case args of
-            [] -> hGetContents stdin >>= run 2 pDesign
-            "-s":fs -> mapM_ (runFile 0 pDesign) fs
-            fs -> mapM_ (runFile 2 pDesign) fs
+            [] -> hGetContents stdin >>= run 2 pProgram
+            "-s":fs -> mapM_ (runFile 0 pProgram) fs
+            fs -> mapM_ (runFile 2 pProgram) fs
 
 
 

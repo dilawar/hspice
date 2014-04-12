@@ -4,87 +4,37 @@ module Jeera.Abs where
 
 
 newtype Ident = Ident String deriving (Eq,Ord,Show)
-data Design =
-   Design [DesignStatement]
+data Program =
+   Program [Statement]
   deriving (Eq,Ord,Show)
 
-data DesignStatement =
-   DesignStatement DeviceDecl
+data Statement =
+   DeviceDecl DeviceDecl
   deriving (Eq,Ord,Show)
 
 data DeviceDecl =
-   SimpleDevice InstanceName SimpleDeviceExpr
- | TwoPortDevice InstanceName TwoPortDeviceExpr
+   SimpleDevice InstanceName SimpleDeviceType [DeviceStatement]
   deriving (Eq,Ord,Show)
 
-data SimpleDeviceExpr =
-   SimpleDeviceExpr DeviceType [DeviceStatement]
-  deriving (Eq,Ord,Show)
-
-data DeviceType =
-   DeviceType_Resistor
- | DeviceType_Capacitor
- | DeviceType_Inductance
- | DeviceType_Voltage
-  deriving (Eq,Ord,Show)
-
-data TwoPortDeviceExpr =
-   TwoPortDeviceExpr [DeviceStatement]
+data SimpleDeviceType =
+   Resistor
+ | Inductor
   deriving (Eq,Ord,Show)
 
 data DeviceStatement =
-   DeviceStatementInputOutputExpression InputOutputExpression
- | DeviceStatementDeviceExpression DeviceExpression
+   DeviceStatement LHSExpression RHSExpression
   deriving (Eq,Ord,Show)
 
-data InputOutputExpression =
-   InputExpression PortExperssion
- | OutputExpression PortExperssion
+data LHSExpression =
+   LHSExpression Ident
   deriving (Eq,Ord,Show)
 
-data DeviceExpression =
-   DeviceExpression LHS RHS
-  deriving (Eq,Ord,Show)
-
-data LHS =
-   LHSFunctionExpression FunctionExpression
- | LHSVariable Variable
-  deriving (Eq,Ord,Show)
-
-data RHS =
-   RHS Expression
-  deriving (Eq,Ord,Show)
-
-data FunctionExpression =
-   FunctionExpression FunctionName Variable
-  deriving (Eq,Ord,Show)
-
-data Expression =
-   Expression_1 Expression Expression
- | Expression_2 Expression Expression
- | Expression_3 Expression Expression
- | Expression_4 Expression Expression
+data RHSExpression =
+   RHSExpressionInteger Integer
+ | RHSExpressionDouble Double
   deriving (Eq,Ord,Show)
 
 data InstanceName =
    InstanceName Ident
-  deriving (Eq,Ord,Show)
-
-data Rvalue =
-   RvalueDouble Double
- | RvalueIdent Ident
- | RvalueInteger Integer
-  deriving (Eq,Ord,Show)
-
-data PortExperssion =
-   PortExperssion Expression
-  deriving (Eq,Ord,Show)
-
-data Variable =
-   Variable Ident
-  deriving (Eq,Ord,Show)
-
-data FunctionName =
-   FunctionName Ident
   deriving (Eq,Ord,Show)
 
