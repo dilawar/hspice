@@ -46,7 +46,8 @@ The set of reserved words is the set of terminals appearing in the grammar. Thos
 The reserved words used in Jeera are the following: \\
 
 \begin{tabular}{lll}
-{\reserved{Capacitor}} &{\reserved{Inductor}} &{\reserved{Resistor}} \\
+{\reserved{Capacitor}} &{\reserved{Device}} &{\reserved{Inductor}} \\
+{\reserved{Resistor}} &{\reserved{input}} &{\reserved{output}} \\
 {\reserved{value}} & & \\
 \end{tabular}\\
 
@@ -83,6 +84,7 @@ All other symbols are terminals.\\
 
 \begin{tabular}{lll}
 {\nonterminal{DeviceDecl}} & {\arrow}  &{\nonterminal{InstanceName}} {\terminal{{$=$}}} {\nonterminal{SimpleDeviceType}} {\terminal{\{}} {\nonterminal{ListDeviceStatement}} {\terminal{\}}}  \\
+ & {\delimit}  &{\nonterminal{InstanceName}} {\terminal{{$=$}}} {\terminal{Device}} {\terminal{\{}} {\nonterminal{ListDeviceStatement}} {\terminal{\}}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
@@ -102,6 +104,8 @@ All other symbols are terminals.\\
 
 \begin{tabular}{lll}
 {\nonterminal{LHSExpression}} & {\arrow}  &{\terminal{value}}  \\
+ & {\delimit}  &{\terminal{input}}  \\
+ & {\delimit}  &{\terminal{output}}  \\
  & {\delimit}  &{\nonterminal{Ident}}  \\
 \end{tabular}\\
 
@@ -121,7 +125,7 @@ All other symbols are terminals.\\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{PortExpression}} & {\arrow}  &{\terminal{(}} {\nonterminal{Ident}} {\terminal{,}} {\nonterminal{Ident}} {\terminal{)}}  \\
+{\nonterminal{PortExpression}} & {\arrow}  &{\terminal{(}} {\nonterminal{PortName}} {\terminal{,}} {\nonterminal{PortName}} {\terminal{)}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
@@ -135,6 +139,11 @@ All other symbols are terminals.\\
 
 \begin{tabular}{lll}
 {\nonterminal{InstanceName}} & {\arrow}  &{\nonterminal{Ident}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{PortName}} & {\arrow}  &{\nonterminal{Ident}}  \\
+ & {\delimit}  &{\nonterminal{Integer}}  \\
 \end{tabular}\\
 
 

@@ -85,7 +85,7 @@ eitherResIdent tv s = treeFind resWords
                               | s > a  = treeFind right
                               | s == a = t
 
-resWords = b ";" 8 (b "+" 4 (b ")" 2 (b "(" 1 N N) (b "*" 3 N N)) (b "-" 6 (b "," 5 N N) (b "/" 7 N N))) (b "Resistor" 12 (b "Capacitor" 10 (b "=" 9 N N) (b "Inductor" 11 N N)) (b "{" 14 (b "value" 13 N N) (b "}" 15 N N)))
+resWords = b "Capacitor" 10 (b "," 5 (b "*" 3 (b ")" 2 (b "(" 1 N N) N) (b "+" 4 N N)) (b ";" 8 (b "/" 7 (b "-" 6 N N) N) (b "=" 9 N N))) (b "output" 15 (b "Resistor" 13 (b "Inductor" 12 (b "Device" 11 N N) N) (b "input" 14 N N)) (b "{" 17 (b "value" 16 N N) (b "}" 18 N N)))
    where b s n = let bs = id s
                   in B bs (TS bs n)
 

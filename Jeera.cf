@@ -8,6 +8,7 @@ DeviceDecl. Statement ::= DeviceDecl;
 
 -- Declare device
 SimpleDevice. DeviceDecl ::= InstanceName "=" SimpleDeviceType "{" [DeviceStatement] "}";
+TwoPortDevice. DeviceDecl ::= InstanceName "=" "Device" "{" [DeviceStatement] "}";
 
 -- Device types
 Resistor. SimpleDeviceType ::= "Resistor";
@@ -19,6 +20,8 @@ DeviceStatement. DeviceStatement ::= LHSExpression "=" RHSExpression;
 terminator nonempty DeviceStatement ";";
 
 rules LHSExpression ::= "value"
+                    | "input"
+                    | "output"
                     | Ident 
                     ;
 
@@ -31,7 +34,7 @@ ExpressionInteger. SimpleExpression ::= Integer;
 PortExpr. Expression ::= PortExpression;
 MathExpr. Expression ::= MathExpression;
 
-PortExpression. PortExpression ::= "(" Ident "," Ident ")";
+PortExpression. PortExpression ::= "(" PortName "," PortName ")";
 
 rules MathExpression ::=  Expression  "*" Expression 
         | Expression "+" Expression 
@@ -45,6 +48,8 @@ rules MathExpression ::=  Expression  "*" Expression
 -- Instance name 
 InstanceName. InstanceName ::= Ident;
 
+-- Port name
+rules PortName ::= Ident | Integer;
 
 -- Declare connections
 

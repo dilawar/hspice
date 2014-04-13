@@ -25,11 +25,14 @@ import Jeera.ErrM
  ';' { PT _ (TS _ 8) }
  '=' { PT _ (TS _ 9) }
  'Capacitor' { PT _ (TS _ 10) }
- 'Inductor' { PT _ (TS _ 11) }
- 'Resistor' { PT _ (TS _ 12) }
- 'value' { PT _ (TS _ 13) }
- '{' { PT _ (TS _ 14) }
- '}' { PT _ (TS _ 15) }
+ 'Device' { PT _ (TS _ 11) }
+ 'Inductor' { PT _ (TS _ 12) }
+ 'Resistor' { PT _ (TS _ 13) }
+ 'input' { PT _ (TS _ 14) }
+ 'output' { PT _ (TS _ 15) }
+ 'value' { PT _ (TS _ 16) }
+ '{' { PT _ (TS _ 17) }
+ '}' { PT _ (TS _ 18) }
 
 L_ident  { PT _ (TV $$) }
 L_doubl  { PT _ (TD $$) }
@@ -58,6 +61,7 @@ Statement : DeviceDecl { DeviceDecl $1 }
 
 DeviceDecl :: { DeviceDecl }
 DeviceDecl : InstanceName '=' SimpleDeviceType '{' ListDeviceStatement '}' { SimpleDevice $1 $3 $5 } 
+  | InstanceName '=' 'Device' '{' ListDeviceStatement '}' { TwoPortDevice $1 $5 }
 
 
 SimpleDeviceType :: { SimpleDeviceType }
@@ -77,6 +81,8 @@ ListDeviceStatement : DeviceStatement ';' { (:[]) $1 }
 
 LHSExpression :: { LHSExpression }
 LHSExpression : 'value' { LHSExpression_value } 
+  | 'input' { LHSExpression_input }
+  | 'output' { LHSExpression_output }
   | Ident { LHSExpressionIdent $1 }
 
 
@@ -96,7 +102,7 @@ Expression : PortExpression { PortExpr $1 }
 
 
 PortExpression :: { PortExpression }
-PortExpression : '(' Ident ',' Ident ')' { PortExpression $2 $4 } 
+PortExpression : '(' PortName ',' PortName ')' { PortExpression $2 $4 } 
 
 
 MathExpression :: { MathExpression }
@@ -110,6 +116,11 @@ MathExpression : Expression '*' Expression { MathExpression_1 $1 $3 }
 
 InstanceName :: { InstanceName }
 InstanceName : Ident { InstanceName $1 } 
+
+
+PortName :: { PortName }
+PortName : Ident { PortNameIdent $1 } 
+  | Integer { PortNameInteger $1 }
 
 
 

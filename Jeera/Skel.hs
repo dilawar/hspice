@@ -27,6 +27,7 @@ transStatement x = case x of
 transDeviceDecl :: DeviceDecl -> Result
 transDeviceDecl x = case x of
   SimpleDevice instancename simpledevicetype devicestatements  -> failure x
+  TwoPortDevice instancename devicestatements  -> failure x
 
 
 transSimpleDeviceType :: SimpleDeviceType -> Result
@@ -44,6 +45,8 @@ transDeviceStatement x = case x of
 transLHSExpression :: LHSExpression -> Result
 transLHSExpression x = case x of
   LHSExpression_value  -> failure x
+  LHSExpression_input  -> failure x
+  LHSExpression_output  -> failure x
   LHSExpressionIdent id  -> failure x
 
 
@@ -67,7 +70,7 @@ transExpression x = case x of
 
 transPortExpression :: PortExpression -> Result
 transPortExpression x = case x of
-  PortExpression id1 id2  -> failure x
+  PortExpression portname1 portname2  -> failure x
 
 
 transMathExpression :: MathExpression -> Result
@@ -83,6 +86,12 @@ transMathExpression x = case x of
 transInstanceName :: InstanceName -> Result
 transInstanceName x = case x of
   InstanceName id  -> failure x
+
+
+transPortName :: PortName -> Result
+transPortName x = case x of
+  PortNameIdent id  -> failure x
+  PortNameInteger n  -> failure x
 
 
 

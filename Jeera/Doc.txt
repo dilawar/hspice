@@ -32,7 +32,8 @@ Integer literals //Integer// are nonempty sequences of digits.
 The set of reserved words is the set of terminals appearing in the grammar. Those reserved words that consist of non-letter characters are called symbols, and they are treated in a different way from those that are similar to identifiers. The lexer follows rules familiar from languages like Haskell, C, and Java, including longest match and spacing conventions.
 
 The reserved words used in Jeera are the following:
-  | ``Capacitor`` | ``Inductor`` | ``Resistor`` | ``value``
+  | ``Capacitor`` | ``Device`` | ``Inductor`` | ``Resistor``
+  | ``input`` | ``output`` | ``value`` | 
 
 The symbols used in Jeera are the following:
   | ; | = | { | }
@@ -53,6 +54,7 @@ All other symbols are terminals.
   |  |  **|**  | //Statement// ``;`` //[Statement]// 
   | //Statement// | -> | //DeviceDecl// 
   | //DeviceDecl// | -> | //InstanceName// ``=`` //SimpleDeviceType// ``{`` //[DeviceStatement]// ``}`` 
+  |  |  **|**  | //InstanceName// ``=`` ``Device`` ``{`` //[DeviceStatement]// ``}`` 
   | //SimpleDeviceType// | -> | ``Resistor`` 
   |  |  **|**  | ``Inductor`` 
   |  |  **|**  | ``Capacitor`` 
@@ -60,6 +62,8 @@ All other symbols are terminals.
   | //[DeviceStatement]// | -> | //DeviceStatement// ``;`` 
   |  |  **|**  | //DeviceStatement// ``;`` //[DeviceStatement]// 
   | //LHSExpression// | -> | ``value`` 
+  |  |  **|**  | ``input`` 
+  |  |  **|**  | ``output`` 
   |  |  **|**  | //Ident// 
   | //RHSExpression// | -> | //SimpleExpression// 
   |  |  **|**  | //Expression// 
@@ -67,7 +71,7 @@ All other symbols are terminals.
   |  |  **|**  | //Integer// 
   | //Expression// | -> | //PortExpression// 
   |  |  **|**  | //MathExpression// 
-  | //PortExpression// | -> | ``(`` //Ident// ``,`` //Ident// ``)`` 
+  | //PortExpression// | -> | ``(`` //PortName// ``,`` //PortName// ``)`` 
   | //MathExpression// | -> | //Expression// ``*`` //Expression// 
   |  |  **|**  | //Expression// ``+`` //Expression// 
   |  |  **|**  | //Expression// ``/`` //Expression// 
@@ -75,5 +79,7 @@ All other symbols are terminals.
   |  |  **|**  | ``(`` //MathExpression// ``)`` 
   |  |  **|**  | //Ident// 
   | //InstanceName// | -> | //Ident// 
+  | //PortName// | -> | //Ident// 
+  |  |  **|**  | //Integer// 
 
 

@@ -14,6 +14,7 @@ data Statement =
 
 data DeviceDecl =
    SimpleDevice InstanceName SimpleDeviceType [DeviceStatement]
+ | TwoPortDevice InstanceName [DeviceStatement]
   deriving (Eq,Ord,Show)
 
 data SimpleDeviceType =
@@ -28,6 +29,8 @@ data DeviceStatement =
 
 data LHSExpression =
    LHSExpression_value
+ | LHSExpression_input
+ | LHSExpression_output
  | LHSExpressionIdent Ident
   deriving (Eq,Ord,Show)
 
@@ -47,7 +50,7 @@ data Expression =
   deriving (Eq,Ord,Show)
 
 data PortExpression =
-   PortExpression Ident Ident
+   PortExpression PortName PortName
   deriving (Eq,Ord,Show)
 
 data MathExpression =
@@ -61,5 +64,10 @@ data MathExpression =
 
 data InstanceName =
    InstanceName Ident
+  deriving (Eq,Ord,Show)
+
+data PortName =
+   PortNameIdent Ident
+ | PortNameInteger Integer
   deriving (Eq,Ord,Show)
 

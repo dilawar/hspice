@@ -99,6 +99,7 @@ instance Print Statement where
 instance Print DeviceDecl where
   prt i e = case e of
    SimpleDevice instancename simpledevicetype devicestatements -> prPrec i 0 (concatD [prt 0 instancename , doc (showString "=") , prt 0 simpledevicetype , doc (showString "{") , prt 0 devicestatements , doc (showString "}")])
+   TwoPortDevice instancename devicestatements -> prPrec i 0 (concatD [prt 0 instancename , doc (showString "=") , doc (showString "Device") , doc (showString "{") , prt 0 devicestatements , doc (showString "}")])
 
 
 instance Print SimpleDeviceType where
@@ -119,6 +120,8 @@ instance Print DeviceStatement where
 instance Print LHSExpression where
   prt i e = case e of
    LHSExpression_value  -> prPrec i 0 (concatD [doc (showString "value")])
+   LHSExpression_input  -> prPrec i 0 (concatD [doc (showString "input")])
+   LHSExpression_output  -> prPrec i 0 (concatD [doc (showString "output")])
    LHSExpressionIdent id -> prPrec i 0 (concatD [prt 0 id])
 
 
@@ -142,7 +145,7 @@ instance Print Expression where
 
 instance Print PortExpression where
   prt i e = case e of
-   PortExpression id0 id -> prPrec i 0 (concatD [doc (showString "(") , prt 0 id0 , doc (showString ",") , prt 0 id , doc (showString ")")])
+   PortExpression portname0 portname -> prPrec i 0 (concatD [doc (showString "(") , prt 0 portname0 , doc (showString ",") , prt 0 portname , doc (showString ")")])
 
 
 instance Print MathExpression where
@@ -158,6 +161,12 @@ instance Print MathExpression where
 instance Print InstanceName where
   prt i e = case e of
    InstanceName id -> prPrec i 0 (concatD [prt 0 id])
+
+
+instance Print PortName where
+  prt i e = case e of
+   PortNameIdent id -> prPrec i 0 (concatD [prt 0 id])
+   PortNameInteger n -> prPrec i 0 (concatD [prt 0 n])
 
 
 

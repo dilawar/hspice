@@ -6,13 +6,11 @@ c1 = Capacitor {
     value = 100000;
     };
 
-/*
 d1 = Device {
         input = (a, 0);
         output = (b, 0);
-        V(b) = V(a) * 0.3e-5 - 23.001;
+        /*V(b) = V(a) * 0.3e-5 - 23.001;*/
 };
-*/
 
 // Add them in parallel
 //subc = parallel r1 r2
