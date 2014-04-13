@@ -20,12 +20,18 @@ DeviceStatement. DeviceStatement ::= LHSExpression "=" RHSExpression;
 terminator nonempty DeviceStatement ";";
 
 rules LHSExpression ::= "value"
-                    | "input"
-                    | "output"
+                    | InOutPortVariable
+                    | FunctionExpression
                     | Ident 
                     ;
 
-rules RHSExpression ::= SimpleExpression | Expression;
+InputVariable. InOutPortVariable ::= "input";
+OutputVariable. InOutPortVariable ::= "output";
+FunctionExpression. FunctionExpression ::= Ident "(" Ident ")";
+
+FunctionExpression. FunctionExpression ::=
+
+rules RHSExpression ::= SimpleExpression | Expression | FunctionExpression;
 
 ExpressionDouble. SimpleExpression ::= Double;
 ExpressionInteger. SimpleExpression ::= Integer;
