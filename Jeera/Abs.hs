@@ -19,6 +19,7 @@ data DeviceDecl =
 data SimpleDeviceType =
    Resistor
  | Inductor
+ | Capacitor
   deriving (Eq,Ord,Show)
 
 data DeviceStatement =
@@ -26,12 +27,36 @@ data DeviceStatement =
   deriving (Eq,Ord,Show)
 
 data LHSExpression =
-   LHSExpression Ident
+   LHSExpression_value
+ | LHSExpressionIdent Ident
   deriving (Eq,Ord,Show)
 
 data RHSExpression =
-   RHSExpressionInteger Integer
- | RHSExpressionDouble Double
+   RHSExpressionSimpleExpression SimpleExpression
+ | RHSExpressionExpression Expression
+  deriving (Eq,Ord,Show)
+
+data SimpleExpression =
+   ExpressionDouble Double
+ | ExpressionInteger Integer
+  deriving (Eq,Ord,Show)
+
+data Expression =
+   PortExpr PortExpression
+ | MathExpr MathExpression
+  deriving (Eq,Ord,Show)
+
+data PortExpression =
+   PortExpression Ident Ident
+  deriving (Eq,Ord,Show)
+
+data MathExpression =
+   MathExpression_1 Expression Expression
+ | MathExpression_2 Expression Expression
+ | MathExpression_3 Expression Expression
+ | MathExpression_4 Expression Expression
+ | MathExpression_5 MathExpression
+ | MathExpressionIdent Ident
   deriving (Eq,Ord,Show)
 
 data InstanceName =

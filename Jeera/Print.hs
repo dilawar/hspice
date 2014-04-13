@@ -105,6 +105,7 @@ instance Print SimpleDeviceType where
   prt i e = case e of
    Resistor  -> prPrec i 0 (concatD [doc (showString "Resistor")])
    Inductor  -> prPrec i 0 (concatD [doc (showString "Inductor")])
+   Capacitor  -> prPrec i 0 (concatD [doc (showString "Capacitor")])
 
 
 instance Print DeviceStatement where
@@ -117,13 +118,41 @@ instance Print DeviceStatement where
 
 instance Print LHSExpression where
   prt i e = case e of
-   LHSExpression id -> prPrec i 0 (concatD [prt 0 id])
+   LHSExpression_value  -> prPrec i 0 (concatD [doc (showString "value")])
+   LHSExpressionIdent id -> prPrec i 0 (concatD [prt 0 id])
 
 
 instance Print RHSExpression where
   prt i e = case e of
-   RHSExpressionInteger n -> prPrec i 0 (concatD [prt 0 n])
-   RHSExpressionDouble d -> prPrec i 0 (concatD [prt 0 d])
+   RHSExpressionSimpleExpression simpleexpression -> prPrec i 0 (concatD [prt 0 simpleexpression])
+   RHSExpressionExpression expression -> prPrec i 0 (concatD [prt 0 expression])
+
+
+instance Print SimpleExpression where
+  prt i e = case e of
+   ExpressionDouble d -> prPrec i 0 (concatD [prt 0 d])
+   ExpressionInteger n -> prPrec i 0 (concatD [prt 0 n])
+
+
+instance Print Expression where
+  prt i e = case e of
+   PortExpr portexpression -> prPrec i 0 (concatD [prt 0 portexpression])
+   MathExpr mathexpression -> prPrec i 0 (concatD [prt 0 mathexpression])
+
+
+instance Print PortExpression where
+  prt i e = case e of
+   PortExpression id0 id -> prPrec i 0 (concatD [doc (showString "(") , prt 0 id0 , doc (showString ",") , prt 0 id , doc (showString ")")])
+
+
+instance Print MathExpression where
+  prt i e = case e of
+   MathExpression_1 expression0 expression -> prPrec i 0 (concatD [prt 0 expression0 , doc (showString "*") , prt 0 expression])
+   MathExpression_2 expression0 expression -> prPrec i 0 (concatD [prt 0 expression0 , doc (showString "+") , prt 0 expression])
+   MathExpression_3 expression0 expression -> prPrec i 0 (concatD [prt 0 expression0 , doc (showString "/") , prt 0 expression])
+   MathExpression_4 expression0 expression -> prPrec i 0 (concatD [prt 0 expression0 , doc (showString "-") , prt 0 expression])
+   MathExpression_5 mathexpression -> prPrec i 0 (concatD [doc (showString "(") , prt 0 mathexpression , doc (showString ")")])
+   MathExpressionIdent id -> prPrec i 0 (concatD [prt 0 id])
 
 
 instance Print InstanceName where

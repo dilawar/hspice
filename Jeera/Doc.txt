@@ -17,13 +17,13 @@ reserved words excluded.
 
 
 ===Literals===
-Integer literals //Integer// are nonempty sequences of digits.
-
-
 Double-precision float literals //Double// have the structure
 indicated by the regular expression ``digit+ '.' digit+ ('e' ('-')? digit+)?`` i.e.\
 two sequences of digits separated by a decimal point, optionally
 followed by an unsigned or negative exponent.
+
+
+Integer literals //Integer// are nonempty sequences of digits.
 
 
 
@@ -32,10 +32,12 @@ followed by an unsigned or negative exponent.
 The set of reserved words is the set of terminals appearing in the grammar. Those reserved words that consist of non-letter characters are called symbols, and they are treated in a different way from those that are similar to identifiers. The lexer follows rules familiar from languages like Haskell, C, and Java, including longest match and spacing conventions.
 
 The reserved words used in Jeera are the following:
-  | ``Inductor`` | ``Resistor`` |  | 
+  | ``Capacitor`` | ``Inductor`` | ``Resistor`` | ``value``
 
 The symbols used in Jeera are the following:
   | ; | = | { | }
+  | ( | , | ) | *
+  | + | / | - | 
 
 ===Comments===
 Single-line comments begin with //.Multiple-line comments are  enclosed with /* and */.
@@ -53,12 +55,25 @@ All other symbols are terminals.
   | //DeviceDecl// | -> | //InstanceName// ``=`` //SimpleDeviceType// ``{`` //[DeviceStatement]// ``}`` 
   | //SimpleDeviceType// | -> | ``Resistor`` 
   |  |  **|**  | ``Inductor`` 
+  |  |  **|**  | ``Capacitor`` 
   | //DeviceStatement// | -> | //LHSExpression// ``=`` //RHSExpression// 
   | //[DeviceStatement]// | -> | //DeviceStatement// ``;`` 
   |  |  **|**  | //DeviceStatement// ``;`` //[DeviceStatement]// 
-  | //LHSExpression// | -> | //Ident// 
-  | //RHSExpression// | -> | //Integer// 
-  |  |  **|**  | //Double// 
+  | //LHSExpression// | -> | ``value`` 
+  |  |  **|**  | //Ident// 
+  | //RHSExpression// | -> | //SimpleExpression// 
+  |  |  **|**  | //Expression// 
+  | //SimpleExpression// | -> | //Double// 
+  |  |  **|**  | //Integer// 
+  | //Expression// | -> | //PortExpression// 
+  |  |  **|**  | //MathExpression// 
+  | //PortExpression// | -> | ``(`` //Ident// ``,`` //Ident// ``)`` 
+  | //MathExpression// | -> | //Expression// ``*`` //Expression// 
+  |  |  **|**  | //Expression// ``+`` //Expression// 
+  |  |  **|**  | //Expression// ``/`` //Expression// 
+  |  |  **|**  | //Expression// ``-`` //Expression// 
+  |  |  **|**  | ``(`` //MathExpression// ``)`` 
+  |  |  **|**  | //Ident// 
   | //InstanceName// | -> | //Ident// 
 
 

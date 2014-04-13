@@ -33,6 +33,7 @@ transSimpleDeviceType :: SimpleDeviceType -> Result
 transSimpleDeviceType x = case x of
   Resistor  -> failure x
   Inductor  -> failure x
+  Capacitor  -> failure x
 
 
 transDeviceStatement :: DeviceStatement -> Result
@@ -42,13 +43,41 @@ transDeviceStatement x = case x of
 
 transLHSExpression :: LHSExpression -> Result
 transLHSExpression x = case x of
-  LHSExpression id  -> failure x
+  LHSExpression_value  -> failure x
+  LHSExpressionIdent id  -> failure x
 
 
 transRHSExpression :: RHSExpression -> Result
 transRHSExpression x = case x of
-  RHSExpressionInteger n  -> failure x
-  RHSExpressionDouble d  -> failure x
+  RHSExpressionSimpleExpression simpleexpression  -> failure x
+  RHSExpressionExpression expression  -> failure x
+
+
+transSimpleExpression :: SimpleExpression -> Result
+transSimpleExpression x = case x of
+  ExpressionDouble d  -> failure x
+  ExpressionInteger n  -> failure x
+
+
+transExpression :: Expression -> Result
+transExpression x = case x of
+  PortExpr portexpression  -> failure x
+  MathExpr mathexpression  -> failure x
+
+
+transPortExpression :: PortExpression -> Result
+transPortExpression x = case x of
+  PortExpression id1 id2  -> failure x
+
+
+transMathExpression :: MathExpression -> Result
+transMathExpression x = case x of
+  MathExpression_1 expression1 expression2  -> failure x
+  MathExpression_2 expression1 expression2  -> failure x
+  MathExpression_3 expression1 expression2  -> failure x
+  MathExpression_4 expression1 expression2  -> failure x
+  MathExpression_5 mathexpression  -> failure x
+  MathExpressionIdent id  -> failure x
 
 
 transInstanceName :: InstanceName -> Result

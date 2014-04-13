@@ -15,24 +15,33 @@ import Jeera.ErrM
 %tokentype { Token }
 
 %token 
- ';' { PT _ (TS _ 1) }
- '=' { PT _ (TS _ 2) }
- 'Inductor' { PT _ (TS _ 3) }
- 'Resistor' { PT _ (TS _ 4) }
- '{' { PT _ (TS _ 5) }
- '}' { PT _ (TS _ 6) }
+ '(' { PT _ (TS _ 1) }
+ ')' { PT _ (TS _ 2) }
+ '*' { PT _ (TS _ 3) }
+ '+' { PT _ (TS _ 4) }
+ ',' { PT _ (TS _ 5) }
+ '-' { PT _ (TS _ 6) }
+ '/' { PT _ (TS _ 7) }
+ ';' { PT _ (TS _ 8) }
+ '=' { PT _ (TS _ 9) }
+ 'Capacitor' { PT _ (TS _ 10) }
+ 'Inductor' { PT _ (TS _ 11) }
+ 'Resistor' { PT _ (TS _ 12) }
+ 'value' { PT _ (TS _ 13) }
+ '{' { PT _ (TS _ 14) }
+ '}' { PT _ (TS _ 15) }
 
 L_ident  { PT _ (TV $$) }
-L_integ  { PT _ (TI $$) }
 L_doubl  { PT _ (TD $$) }
+L_integ  { PT _ (TI $$) }
 L_err    { _ }
 
 
 %%
 
 Ident   :: { Ident }   : L_ident  { Ident $1 }
-Integer :: { Integer } : L_integ  { (read ( $1)) :: Integer }
 Double  :: { Double }  : L_doubl  { (read ( $1)) :: Double }
+Integer :: { Integer } : L_integ  { (read ( $1)) :: Integer }
 
 Program :: { Program }
 Program : ListStatement { Program $1 } 
@@ -54,6 +63,7 @@ DeviceDecl : InstanceName '=' SimpleDeviceType '{' ListDeviceStatement '}' { Sim
 SimpleDeviceType :: { SimpleDeviceType }
 SimpleDeviceType : 'Resistor' { Resistor } 
   | 'Inductor' { Inductor }
+  | 'Capacitor' { Capacitor }
 
 
 DeviceStatement :: { DeviceStatement }
@@ -66,12 +76,36 @@ ListDeviceStatement : DeviceStatement ';' { (:[]) $1 }
 
 
 LHSExpression :: { LHSExpression }
-LHSExpression : Ident { LHSExpression $1 } 
+LHSExpression : 'value' { LHSExpression_value } 
+  | Ident { LHSExpressionIdent $1 }
 
 
 RHSExpression :: { RHSExpression }
-RHSExpression : Integer { RHSExpressionInteger $1 } 
-  | Double { RHSExpressionDouble $1 }
+RHSExpression : SimpleExpression { RHSExpressionSimpleExpression $1 } 
+  | Expression { RHSExpressionExpression $1 }
+
+
+SimpleExpression :: { SimpleExpression }
+SimpleExpression : Double { ExpressionDouble $1 } 
+  | Integer { ExpressionInteger $1 }
+
+
+Expression :: { Expression }
+Expression : PortExpression { PortExpr $1 } 
+  | MathExpression { MathExpr $1 }
+
+
+PortExpression :: { PortExpression }
+PortExpression : '(' Ident ',' Ident ')' { PortExpression $2 $4 } 
+
+
+MathExpression :: { MathExpression }
+MathExpression : Expression '*' Expression { MathExpression_1 $1 $3 } 
+  | Expression '+' Expression { MathExpression_2 $1 $3 }
+  | Expression '/' Expression { MathExpression_3 $1 $3 }
+  | Expression '-' Expression { MathExpression_4 $1 $3 }
+  | '(' MathExpression ')' { MathExpression_5 $2 }
+  | Ident { MathExpressionIdent $1 }
 
 
 InstanceName :: { InstanceName }

@@ -12,19 +12,34 @@ SimpleDevice. DeviceDecl ::= InstanceName "=" SimpleDeviceType "{" [DeviceStatem
 -- Device types
 Resistor. SimpleDeviceType ::= "Resistor";
 Inductor. SimpleDeviceType ::= "Inductor";
+Capacitor. SimpleDeviceType ::= "Capacitor";
 
 -- Device statement
 DeviceStatement. DeviceStatement ::= LHSExpression "=" RHSExpression;
 terminator nonempty DeviceStatement ";";
 
-LHSExpression. LHSExpression ::= Ident;
+rules LHSExpression ::= "value"
+                    | Ident 
+                    ;
 
 rules RHSExpression ::= SimpleExpression | Expression;
-SimpleExpression. SimpleExpression ::= Double | Integer;
-rules Expression ::= PortExpression | MathExpression;
 
-PortExpression. PortExpression ::= "(" Indet, Ident ")";
-MathExpression. MathExpression ::= Ident;
+ExpressionDouble. SimpleExpression ::= Double;
+ExpressionInteger. SimpleExpression ::= Integer;
+
+
+PortExpr. Expression ::= PortExpression;
+MathExpr. Expression ::= MathExpression;
+
+PortExpression. PortExpression ::= "(" Ident "," Ident ")";
+
+rules MathExpression ::=  Expression  "*" Expression 
+        | Expression "+" Expression 
+        | Expression "/" Expression 
+        | Expression "-" Expression
+        | "(" MathExpression ")"
+        | Ident
+        ;
 
 
 -- Instance name 
