@@ -19,19 +19,22 @@ Capacitor. SimpleDeviceType ::= "Capacitor";
 DeviceStatement. DeviceStatement ::= LHSExpression "=" RHSExpression;
 terminator nonempty DeviceStatement ";";
 
-rules LHSExpression ::= "value"
-                    | InOutPortVariable
+rules LHSExpression ::= ValueExpression
                     | FunctionExpression
+                    | InOutPortVariable
                     | Ident 
                     ;
 
+FunctionExpression. FunctionExpression ::= Ident "(" Ident ")";
+ValueExpression. ValueExpression ::= "value";
 InputVariable. InOutPortVariable ::= "input";
 OutputVariable. InOutPortVariable ::= "output";
-FunctionExpression. FunctionExpression ::= Ident "(" Ident ")";
 
-FunctionExpression. FunctionExpression ::=
-
-rules RHSExpression ::= SimpleExpression | Expression | FunctionExpression;
+rules RHSExpression ::= SimpleExpression 
+    | FunctionExpression
+    | MathExpression
+    | Expression 
+    ;
 
 ExpressionDouble. SimpleExpression ::= Double;
 ExpressionInteger. SimpleExpression ::= Integer;
@@ -39,13 +42,17 @@ ExpressionInteger. SimpleExpression ::= Integer;
 
 PortExpr. Expression ::= PortExpression;
 MathExpr. Expression ::= MathExpression;
+NumericExpr. Expression ::= NumericExpression;
+rules NumericExpression ::= Integer 
+    | Double 
+    ;
 
 PortExpression. PortExpression ::= "(" PortName "," PortName ")";
 
-rules MathExpression ::=  Expression  "*" Expression 
-        | Expression "+" Expression 
-        | Expression "/" Expression 
-        | Expression "-" Expression
+rules MathExpression ::=  RHSExpression  "*" RHSExpression 
+        | RHSExpression "+" RHSExpression 
+        | RHSExpression "/" RHSExpression 
+        | RHSExpression "-" RHSExpression
         | "(" MathExpression ")"
         | Ident
         ;

@@ -55,8 +55,8 @@ The symbols used in Jeera are the following: \\
 
 \begin{tabular}{lll}
 {\symb{;}} &{\symb{{$=$}}} &{\symb{\{}} \\
-{\symb{\}}} &{\symb{(}} &{\symb{,}} \\
-{\symb{)}} &{\symb{*}} &{\symb{{$+$}}} \\
+{\symb{\}}} &{\symb{(}} &{\symb{)}} \\
+{\symb{,}} &{\symb{*}} &{\symb{{$+$}}} \\
 {\symb{/}} &{\symb{{$-$}}} & \\
 \end{tabular}\\
 
@@ -103,14 +103,29 @@ All other symbols are terminals.\\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{LHSExpression}} & {\arrow}  &{\terminal{value}}  \\
- & {\delimit}  &{\terminal{input}}  \\
- & {\delimit}  &{\terminal{output}}  \\
+{\nonterminal{LHSExpression}} & {\arrow}  &{\nonterminal{ValueExpression}}  \\
+ & {\delimit}  &{\nonterminal{FunctionExpression}}  \\
+ & {\delimit}  &{\nonterminal{InOutPortVariable}}  \\
  & {\delimit}  &{\nonterminal{Ident}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
+{\nonterminal{FunctionExpression}} & {\arrow}  &{\nonterminal{Ident}} {\terminal{(}} {\nonterminal{Ident}} {\terminal{)}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ValueExpression}} & {\arrow}  &{\terminal{value}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{InOutPortVariable}} & {\arrow}  &{\terminal{input}}  \\
+ & {\delimit}  &{\terminal{output}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
 {\nonterminal{RHSExpression}} & {\arrow}  &{\nonterminal{SimpleExpression}}  \\
+ & {\delimit}  &{\nonterminal{FunctionExpression}}  \\
+ & {\delimit}  &{\nonterminal{MathExpression}}  \\
  & {\delimit}  &{\nonterminal{Expression}}  \\
 \end{tabular}\\
 
@@ -122,6 +137,12 @@ All other symbols are terminals.\\
 \begin{tabular}{lll}
 {\nonterminal{Expression}} & {\arrow}  &{\nonterminal{PortExpression}}  \\
  & {\delimit}  &{\nonterminal{MathExpression}}  \\
+ & {\delimit}  &{\nonterminal{NumericExpression}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{NumericExpression}} & {\arrow}  &{\nonterminal{Integer}}  \\
+ & {\delimit}  &{\nonterminal{Double}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
@@ -129,10 +150,10 @@ All other symbols are terminals.\\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{MathExpression}} & {\arrow}  &{\nonterminal{Expression}} {\terminal{*}} {\nonterminal{Expression}}  \\
- & {\delimit}  &{\nonterminal{Expression}} {\terminal{{$+$}}} {\nonterminal{Expression}}  \\
- & {\delimit}  &{\nonterminal{Expression}} {\terminal{/}} {\nonterminal{Expression}}  \\
- & {\delimit}  &{\nonterminal{Expression}} {\terminal{{$-$}}} {\nonterminal{Expression}}  \\
+{\nonterminal{MathExpression}} & {\arrow}  &{\nonterminal{RHSExpression}} {\terminal{*}} {\nonterminal{RHSExpression}}  \\
+ & {\delimit}  &{\nonterminal{RHSExpression}} {\terminal{{$+$}}} {\nonterminal{RHSExpression}}  \\
+ & {\delimit}  &{\nonterminal{RHSExpression}} {\terminal{/}} {\nonterminal{RHSExpression}}  \\
+ & {\delimit}  &{\nonterminal{RHSExpression}} {\terminal{{$-$}}} {\nonterminal{RHSExpression}}  \\
  & {\delimit}  &{\terminal{(}} {\nonterminal{MathExpression}} {\terminal{)}}  \\
  & {\delimit}  &{\nonterminal{Ident}}  \\
 \end{tabular}\\

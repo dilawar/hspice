@@ -80,14 +80,29 @@ ListDeviceStatement : DeviceStatement ';' { (:[]) $1 }
 
 
 LHSExpression :: { LHSExpression }
-LHSExpression : 'value' { LHSExpression_value } 
-  | 'input' { LHSExpression_input }
-  | 'output' { LHSExpression_output }
+LHSExpression : ValueExpression { LHSExpressionValueExpression $1 } 
+  | FunctionExpression { LHSExpressionFunctionExpression $1 }
+  | InOutPortVariable { LHSExpressionInOutPortVariable $1 }
   | Ident { LHSExpressionIdent $1 }
+
+
+FunctionExpression :: { FunctionExpression }
+FunctionExpression : Ident '(' Ident ')' { FunctionExpression $1 $3 } 
+
+
+ValueExpression :: { ValueExpression }
+ValueExpression : 'value' { ValueExpression } 
+
+
+InOutPortVariable :: { InOutPortVariable }
+InOutPortVariable : 'input' { InputVariable } 
+  | 'output' { OutputVariable }
 
 
 RHSExpression :: { RHSExpression }
 RHSExpression : SimpleExpression { RHSExpressionSimpleExpression $1 } 
+  | FunctionExpression { RHSExpressionFunctionExpression $1 }
+  | MathExpression { RHSExpressionMathExpression $1 }
   | Expression { RHSExpressionExpression $1 }
 
 
@@ -99,6 +114,12 @@ SimpleExpression : Double { ExpressionDouble $1 }
 Expression :: { Expression }
 Expression : PortExpression { PortExpr $1 } 
   | MathExpression { MathExpr $1 }
+  | NumericExpression { NumericExpr $1 }
+
+
+NumericExpression :: { NumericExpression }
+NumericExpression : Integer { NumericExpressionInteger $1 } 
+  | Double { NumericExpressionDouble $1 }
 
 
 PortExpression :: { PortExpression }
@@ -106,10 +127,10 @@ PortExpression : '(' PortName ',' PortName ')' { PortExpression $2 $4 }
 
 
 MathExpression :: { MathExpression }
-MathExpression : Expression '*' Expression { MathExpression_1 $1 $3 } 
-  | Expression '+' Expression { MathExpression_2 $1 $3 }
-  | Expression '/' Expression { MathExpression_3 $1 $3 }
-  | Expression '-' Expression { MathExpression_4 $1 $3 }
+MathExpression : RHSExpression '*' RHSExpression { MathExpression_1 $1 $3 } 
+  | RHSExpression '+' RHSExpression { MathExpression_2 $1 $3 }
+  | RHSExpression '/' RHSExpression { MathExpression_3 $1 $3 }
+  | RHSExpression '-' RHSExpression { MathExpression_4 $1 $3 }
   | '(' MathExpression ')' { MathExpression_5 $2 }
   | Ident { MathExpressionIdent $1 }
 

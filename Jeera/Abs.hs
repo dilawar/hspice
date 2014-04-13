@@ -28,14 +28,29 @@ data DeviceStatement =
   deriving (Eq,Ord,Show)
 
 data LHSExpression =
-   LHSExpression_value
- | LHSExpression_input
- | LHSExpression_output
+   LHSExpressionValueExpression ValueExpression
+ | LHSExpressionFunctionExpression FunctionExpression
+ | LHSExpressionInOutPortVariable InOutPortVariable
  | LHSExpressionIdent Ident
+  deriving (Eq,Ord,Show)
+
+data FunctionExpression =
+   FunctionExpression Ident Ident
+  deriving (Eq,Ord,Show)
+
+data ValueExpression =
+   ValueExpression
+  deriving (Eq,Ord,Show)
+
+data InOutPortVariable =
+   InputVariable
+ | OutputVariable
   deriving (Eq,Ord,Show)
 
 data RHSExpression =
    RHSExpressionSimpleExpression SimpleExpression
+ | RHSExpressionFunctionExpression FunctionExpression
+ | RHSExpressionMathExpression MathExpression
  | RHSExpressionExpression Expression
   deriving (Eq,Ord,Show)
 
@@ -47,6 +62,12 @@ data SimpleExpression =
 data Expression =
    PortExpr PortExpression
  | MathExpr MathExpression
+ | NumericExpr NumericExpression
+  deriving (Eq,Ord,Show)
+
+data NumericExpression =
+   NumericExpressionInteger Integer
+ | NumericExpressionDouble Double
   deriving (Eq,Ord,Show)
 
 data PortExpression =
@@ -54,10 +75,10 @@ data PortExpression =
   deriving (Eq,Ord,Show)
 
 data MathExpression =
-   MathExpression_1 Expression Expression
- | MathExpression_2 Expression Expression
- | MathExpression_3 Expression Expression
- | MathExpression_4 Expression Expression
+   MathExpression_1 RHSExpression RHSExpression
+ | MathExpression_2 RHSExpression RHSExpression
+ | MathExpression_3 RHSExpression RHSExpression
+ | MathExpression_4 RHSExpression RHSExpression
  | MathExpression_5 MathExpression
  | MathExpressionIdent Ident
   deriving (Eq,Ord,Show)

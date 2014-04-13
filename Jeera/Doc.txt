@@ -37,7 +37,7 @@ The reserved words used in Jeera are the following:
 
 The symbols used in Jeera are the following:
   | ; | = | { | }
-  | ( | , | ) | *
+  | ( | ) | , | *
   | + | / | - | 
 
 ===Comments===
@@ -61,21 +61,30 @@ All other symbols are terminals.
   | //DeviceStatement// | -> | //LHSExpression// ``=`` //RHSExpression// 
   | //[DeviceStatement]// | -> | //DeviceStatement// ``;`` 
   |  |  **|**  | //DeviceStatement// ``;`` //[DeviceStatement]// 
-  | //LHSExpression// | -> | ``value`` 
-  |  |  **|**  | ``input`` 
-  |  |  **|**  | ``output`` 
+  | //LHSExpression// | -> | //ValueExpression// 
+  |  |  **|**  | //FunctionExpression// 
+  |  |  **|**  | //InOutPortVariable// 
   |  |  **|**  | //Ident// 
+  | //FunctionExpression// | -> | //Ident// ``(`` //Ident// ``)`` 
+  | //ValueExpression// | -> | ``value`` 
+  | //InOutPortVariable// | -> | ``input`` 
+  |  |  **|**  | ``output`` 
   | //RHSExpression// | -> | //SimpleExpression// 
+  |  |  **|**  | //FunctionExpression// 
+  |  |  **|**  | //MathExpression// 
   |  |  **|**  | //Expression// 
   | //SimpleExpression// | -> | //Double// 
   |  |  **|**  | //Integer// 
   | //Expression// | -> | //PortExpression// 
   |  |  **|**  | //MathExpression// 
+  |  |  **|**  | //NumericExpression// 
+  | //NumericExpression// | -> | //Integer// 
+  |  |  **|**  | //Double// 
   | //PortExpression// | -> | ``(`` //PortName// ``,`` //PortName// ``)`` 
-  | //MathExpression// | -> | //Expression// ``*`` //Expression// 
-  |  |  **|**  | //Expression// ``+`` //Expression// 
-  |  |  **|**  | //Expression// ``/`` //Expression// 
-  |  |  **|**  | //Expression// ``-`` //Expression// 
+  | //MathExpression// | -> | //RHSExpression// ``*`` //RHSExpression// 
+  |  |  **|**  | //RHSExpression// ``+`` //RHSExpression// 
+  |  |  **|**  | //RHSExpression// ``/`` //RHSExpression// 
+  |  |  **|**  | //RHSExpression// ``-`` //RHSExpression// 
   |  |  **|**  | ``(`` //MathExpression// ``)`` 
   |  |  **|**  | //Ident// 
   | //InstanceName// | -> | //Ident// 

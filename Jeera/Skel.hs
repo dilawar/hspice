@@ -44,15 +44,33 @@ transDeviceStatement x = case x of
 
 transLHSExpression :: LHSExpression -> Result
 transLHSExpression x = case x of
-  LHSExpression_value  -> failure x
-  LHSExpression_input  -> failure x
-  LHSExpression_output  -> failure x
+  LHSExpressionValueExpression valueexpression  -> failure x
+  LHSExpressionFunctionExpression functionexpression  -> failure x
+  LHSExpressionInOutPortVariable inoutportvariable  -> failure x
   LHSExpressionIdent id  -> failure x
+
+
+transFunctionExpression :: FunctionExpression -> Result
+transFunctionExpression x = case x of
+  FunctionExpression id1 id2  -> failure x
+
+
+transValueExpression :: ValueExpression -> Result
+transValueExpression x = case x of
+  ValueExpression  -> failure x
+
+
+transInOutPortVariable :: InOutPortVariable -> Result
+transInOutPortVariable x = case x of
+  InputVariable  -> failure x
+  OutputVariable  -> failure x
 
 
 transRHSExpression :: RHSExpression -> Result
 transRHSExpression x = case x of
   RHSExpressionSimpleExpression simpleexpression  -> failure x
+  RHSExpressionFunctionExpression functionexpression  -> failure x
+  RHSExpressionMathExpression mathexpression  -> failure x
   RHSExpressionExpression expression  -> failure x
 
 
@@ -66,6 +84,13 @@ transExpression :: Expression -> Result
 transExpression x = case x of
   PortExpr portexpression  -> failure x
   MathExpr mathexpression  -> failure x
+  NumericExpr numericexpression  -> failure x
+
+
+transNumericExpression :: NumericExpression -> Result
+transNumericExpression x = case x of
+  NumericExpressionInteger n  -> failure x
+  NumericExpressionDouble d  -> failure x
 
 
 transPortExpression :: PortExpression -> Result
@@ -75,10 +100,10 @@ transPortExpression x = case x of
 
 transMathExpression :: MathExpression -> Result
 transMathExpression x = case x of
-  MathExpression_1 expression1 expression2  -> failure x
-  MathExpression_2 expression1 expression2  -> failure x
-  MathExpression_3 expression1 expression2  -> failure x
-  MathExpression_4 expression1 expression2  -> failure x
+  MathExpression_1 rhsexpression1 rhsexpression2  -> failure x
+  MathExpression_2 rhsexpression1 rhsexpression2  -> failure x
+  MathExpression_3 rhsexpression1 rhsexpression2  -> failure x
+  MathExpression_4 rhsexpression1 rhsexpression2  -> failure x
   MathExpression_5 mathexpression  -> failure x
   MathExpressionIdent id  -> failure x
 

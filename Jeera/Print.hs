@@ -119,15 +119,33 @@ instance Print DeviceStatement where
 
 instance Print LHSExpression where
   prt i e = case e of
-   LHSExpression_value  -> prPrec i 0 (concatD [doc (showString "value")])
-   LHSExpression_input  -> prPrec i 0 (concatD [doc (showString "input")])
-   LHSExpression_output  -> prPrec i 0 (concatD [doc (showString "output")])
+   LHSExpressionValueExpression valueexpression -> prPrec i 0 (concatD [prt 0 valueexpression])
+   LHSExpressionFunctionExpression functionexpression -> prPrec i 0 (concatD [prt 0 functionexpression])
+   LHSExpressionInOutPortVariable inoutportvariable -> prPrec i 0 (concatD [prt 0 inoutportvariable])
    LHSExpressionIdent id -> prPrec i 0 (concatD [prt 0 id])
+
+
+instance Print FunctionExpression where
+  prt i e = case e of
+   FunctionExpression id0 id -> prPrec i 0 (concatD [prt 0 id0 , doc (showString "(") , prt 0 id , doc (showString ")")])
+
+
+instance Print ValueExpression where
+  prt i e = case e of
+   ValueExpression  -> prPrec i 0 (concatD [doc (showString "value")])
+
+
+instance Print InOutPortVariable where
+  prt i e = case e of
+   InputVariable  -> prPrec i 0 (concatD [doc (showString "input")])
+   OutputVariable  -> prPrec i 0 (concatD [doc (showString "output")])
 
 
 instance Print RHSExpression where
   prt i e = case e of
    RHSExpressionSimpleExpression simpleexpression -> prPrec i 0 (concatD [prt 0 simpleexpression])
+   RHSExpressionFunctionExpression functionexpression -> prPrec i 0 (concatD [prt 0 functionexpression])
+   RHSExpressionMathExpression mathexpression -> prPrec i 0 (concatD [prt 0 mathexpression])
    RHSExpressionExpression expression -> prPrec i 0 (concatD [prt 0 expression])
 
 
@@ -141,6 +159,13 @@ instance Print Expression where
   prt i e = case e of
    PortExpr portexpression -> prPrec i 0 (concatD [prt 0 portexpression])
    MathExpr mathexpression -> prPrec i 0 (concatD [prt 0 mathexpression])
+   NumericExpr numericexpression -> prPrec i 0 (concatD [prt 0 numericexpression])
+
+
+instance Print NumericExpression where
+  prt i e = case e of
+   NumericExpressionInteger n -> prPrec i 0 (concatD [prt 0 n])
+   NumericExpressionDouble d -> prPrec i 0 (concatD [prt 0 d])
 
 
 instance Print PortExpression where
@@ -150,10 +175,10 @@ instance Print PortExpression where
 
 instance Print MathExpression where
   prt i e = case e of
-   MathExpression_1 expression0 expression -> prPrec i 0 (concatD [prt 0 expression0 , doc (showString "*") , prt 0 expression])
-   MathExpression_2 expression0 expression -> prPrec i 0 (concatD [prt 0 expression0 , doc (showString "+") , prt 0 expression])
-   MathExpression_3 expression0 expression -> prPrec i 0 (concatD [prt 0 expression0 , doc (showString "/") , prt 0 expression])
-   MathExpression_4 expression0 expression -> prPrec i 0 (concatD [prt 0 expression0 , doc (showString "-") , prt 0 expression])
+   MathExpression_1 rhsexpression0 rhsexpression -> prPrec i 0 (concatD [prt 0 rhsexpression0 , doc (showString "*") , prt 0 rhsexpression])
+   MathExpression_2 rhsexpression0 rhsexpression -> prPrec i 0 (concatD [prt 0 rhsexpression0 , doc (showString "+") , prt 0 rhsexpression])
+   MathExpression_3 rhsexpression0 rhsexpression -> prPrec i 0 (concatD [prt 0 rhsexpression0 , doc (showString "/") , prt 0 rhsexpression])
+   MathExpression_4 rhsexpression0 rhsexpression -> prPrec i 0 (concatD [prt 0 rhsexpression0 , doc (showString "-") , prt 0 rhsexpression])
    MathExpression_5 mathexpression -> prPrec i 0 (concatD [doc (showString "(") , prt 0 mathexpression , doc (showString ")")])
    MathExpressionIdent id -> prPrec i 0 (concatD [prt 0 id])
 
