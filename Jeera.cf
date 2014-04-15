@@ -66,8 +66,6 @@ rules NumericExpr ::= Integer
     | Double 
     ;
 
-PortExpr. PortExpr ::= "(" PortName "," PortName ")";
-
 rules MathExpr ::=  RHSDeviceExpr  "*" RHSDeviceExpr 
         | RHSDeviceExpr "+" RHSDeviceExpr 
         | RHSDeviceExpr "/" RHSDeviceExpr 
