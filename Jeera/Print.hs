@@ -98,89 +98,92 @@ instance Print Statement where
 
 instance Print DeviceDecl where
   prt i e = case e of
-   SimpleDevice instancename simpledevicetype devicestatements -> prPrec i 0 (concatD [prt 0 instancename , doc (showString "=") , prt 0 simpledevicetype , doc (showString "{") , prt 0 devicestatements , doc (showString "}")])
-   TwoPortDevice instancename devicestatements -> prPrec i 0 (concatD [prt 0 instancename , doc (showString "=") , doc (showString "Device") , doc (showString "{") , prt 0 devicestatements , doc (showString "}")])
+   Device instancename devicetype devicestatements -> prPrec i 0 (concatD [prt 0 instancename , doc (showString "=") , prt 0 devicetype , doc (showString "{") , prt 0 devicestatements , doc (showString "}")])
 
 
-instance Print SimpleDeviceType where
+instance Print DeviceType where
   prt i e = case e of
    Resistor  -> prPrec i 0 (concatD [doc (showString "Resistor")])
    Inductor  -> prPrec i 0 (concatD [doc (showString "Inductor")])
    Capacitor  -> prPrec i 0 (concatD [doc (showString "Capacitor")])
+   VSource  -> prPrec i 0 (concatD [doc (showString "VSource")])
+   ISource  -> prPrec i 0 (concatD [doc (showString "ISource")])
+   GenericDevice  -> prPrec i 0 (concatD [doc (showString "Device")])
 
 
 instance Print DeviceStatement where
   prt i e = case e of
-   DeviceStatement lhsexpression rhsexpression -> prPrec i 0 (concatD [prt 0 lhsexpression , doc (showString "=") , prt 0 rhsexpression])
+   PortDeclaration portdirection portnames -> prPrec i 0 (concatD [prt 0 portdirection , prt 0 portnames])
+   ValueExpr rhsdeviceexpr -> prPrec i 0 (concatD [doc (showString "value") , doc (showString "=") , prt 0 rhsdeviceexpr])
+   ParameterAssignmentExpr parametername rhsdeviceexpr -> prPrec i 0 (concatD [doc (showString "param") , prt 0 parametername , doc (showString "=") , prt 0 rhsdeviceexpr])
+   InitialConditionExpr parametername rhsdeviceexpr -> prPrec i 0 (concatD [doc (showString "init") , prt 0 parametername , doc (showString "=") , prt 0 rhsdeviceexpr])
+   PortRelation functiononport portname rhsdeviceexpr -> prPrec i 0 (concatD [prt 0 functiononport , doc (showString "(") , prt 0 portname , doc (showString ")") , doc (showString "=") , prt 0 rhsdeviceexpr])
 
   prtList es = case es of
    [x] -> (concatD [prt 0 x , doc (showString ";")])
    x:xs -> (concatD [prt 0 x , doc (showString ";") , prt 0 xs])
 
-instance Print LHSExpression where
+instance Print PortRelationExpr where
   prt i e = case e of
-   LHSExpressionValueExpression valueexpression -> prPrec i 0 (concatD [prt 0 valueexpression])
-   LHSExpressionFunctionExpression functionexpression -> prPrec i 0 (concatD [prt 0 functionexpression])
-   LHSExpressionInOutPortVariable inoutportvariable -> prPrec i 0 (concatD [prt 0 inoutportvariable])
-   LHSExpressionIdent id -> prPrec i 0 (concatD [prt 0 id])
+   PortRelationExpr functiononport portname -> prPrec i 0 (concatD [prt 0 functiononport , doc (showString "(") , prt 0 portname , doc (showString ")")])
 
 
-instance Print FunctionExpression where
+instance Print PortDirection where
   prt i e = case e of
-   FunctionExpression id0 id -> prPrec i 0 (concatD [prt 0 id0 , doc (showString "(") , prt 0 id , doc (showString ")")])
+   InputPort  -> prPrec i 0 (concatD [doc (showString "in")])
+   OutputPort  -> prPrec i 0 (concatD [doc (showString "out")])
 
 
-instance Print ValueExpression where
+instance Print FunctionOnPort where
   prt i e = case e of
-   ValueExpression  -> prPrec i 0 (concatD [doc (showString "value")])
+   FunctionOnPort_V  -> prPrec i 0 (concatD [doc (showString "V")])
+   FunctionOnPort_I  -> prPrec i 0 (concatD [doc (showString "I")])
 
 
-instance Print InOutPortVariable where
+instance Print ParameterName where
   prt i e = case e of
-   InputVariable  -> prPrec i 0 (concatD [doc (showString "input")])
-   OutputVariable  -> prPrec i 0 (concatD [doc (showString "output")])
+   ParameterName id -> prPrec i 0 (concatD [prt 0 id])
 
 
-instance Print RHSExpression where
+instance Print RHSDeviceExpr where
   prt i e = case e of
-   RHSExpressionSimpleExpression simpleexpression -> prPrec i 0 (concatD [prt 0 simpleexpression])
-   RHSExpressionFunctionExpression functionexpression -> prPrec i 0 (concatD [prt 0 functionexpression])
-   RHSExpressionMathExpression mathexpression -> prPrec i 0 (concatD [prt 0 mathexpression])
-   RHSExpressionExpression expression -> prPrec i 0 (concatD [prt 0 expression])
+   RHSDeviceExprSimpleExpr simpleexpr -> prPrec i 0 (concatD [prt 0 simpleexpr])
+   RHSDeviceExprPortRelationExpr portrelationexpr -> prPrec i 0 (concatD [prt 0 portrelationexpr])
+   RHSDeviceExprMathExpr mathexpr -> prPrec i 0 (concatD [prt 0 mathexpr])
+   RHSDeviceExprExpr expr -> prPrec i 0 (concatD [prt 0 expr])
 
 
-instance Print SimpleExpression where
+instance Print SimpleExpr where
   prt i e = case e of
-   ExpressionDouble d -> prPrec i 0 (concatD [prt 0 d])
-   ExpressionInteger n -> prPrec i 0 (concatD [prt 0 n])
+   ExprDouble d -> prPrec i 0 (concatD [prt 0 d])
+   ExprInteger n -> prPrec i 0 (concatD [prt 0 n])
 
 
-instance Print Expression where
+instance Print Expr where
   prt i e = case e of
-   PortExpr portexpression -> prPrec i 0 (concatD [prt 0 portexpression])
-   MathExpr mathexpression -> prPrec i 0 (concatD [prt 0 mathexpression])
-   NumericExpr numericexpression -> prPrec i 0 (concatD [prt 0 numericexpression])
+   MathExpr mathexpr -> prPrec i 0 (concatD [prt 0 mathexpr])
+   NumericExpr numericexpr -> prPrec i 0 (concatD [prt 0 numericexpr])
 
 
-instance Print NumericExpression where
+instance Print NumericExpr where
   prt i e = case e of
-   NumericExpressionInteger n -> prPrec i 0 (concatD [prt 0 n])
-   NumericExpressionDouble d -> prPrec i 0 (concatD [prt 0 d])
+   NumericExprInteger n -> prPrec i 0 (concatD [prt 0 n])
+   NumericExprDouble d -> prPrec i 0 (concatD [prt 0 d])
 
 
-instance Print PortExpression where
+instance Print PortExpr where
   prt i e = case e of
-   PortExpression portname0 portname -> prPrec i 0 (concatD [doc (showString "(") , prt 0 portname0 , doc (showString ",") , prt 0 portname , doc (showString ")")])
+   PortExpr portname0 portname -> prPrec i 0 (concatD [doc (showString "(") , prt 0 portname0 , doc (showString ",") , prt 0 portname , doc (showString ")")])
 
 
-instance Print MathExpression where
+instance Print MathExpr where
   prt i e = case e of
-   MathExpression_1 rhsexpression0 rhsexpression -> prPrec i 0 (concatD [prt 0 rhsexpression0 , doc (showString "*") , prt 0 rhsexpression])
-   MathExpression_2 rhsexpression0 rhsexpression -> prPrec i 0 (concatD [prt 0 rhsexpression0 , doc (showString "+") , prt 0 rhsexpression])
-   MathExpression_3 rhsexpression0 rhsexpression -> prPrec i 0 (concatD [prt 0 rhsexpression0 , doc (showString "/") , prt 0 rhsexpression])
-   MathExpression_4 rhsexpression0 rhsexpression -> prPrec i 0 (concatD [prt 0 rhsexpression0 , doc (showString "-") , prt 0 rhsexpression])
-   MathExpression_5 mathexpression -> prPrec i 0 (concatD [doc (showString "(") , prt 0 mathexpression , doc (showString ")")])
-   MathExpressionIdent id -> prPrec i 0 (concatD [prt 0 id])
+   MathExpr_1 rhsdeviceexpr0 rhsdeviceexpr -> prPrec i 0 (concatD [prt 0 rhsdeviceexpr0 , doc (showString "*") , prt 0 rhsdeviceexpr])
+   MathExpr_2 rhsdeviceexpr0 rhsdeviceexpr -> prPrec i 0 (concatD [prt 0 rhsdeviceexpr0 , doc (showString "+") , prt 0 rhsdeviceexpr])
+   MathExpr_3 rhsdeviceexpr0 rhsdeviceexpr -> prPrec i 0 (concatD [prt 0 rhsdeviceexpr0 , doc (showString "/") , prt 0 rhsdeviceexpr])
+   MathExpr_4 rhsdeviceexpr0 rhsdeviceexpr -> prPrec i 0 (concatD [prt 0 rhsdeviceexpr0 , doc (showString "-") , prt 0 rhsdeviceexpr])
+   MathExpr_5 mathexpr -> prPrec i 0 (concatD [doc (showString "(") , prt 0 mathexpr , doc (showString ")")])
+   MathExprIdent id -> prPrec i 0 (concatD [prt 0 id])
 
 
 instance Print InstanceName where
@@ -193,5 +196,8 @@ instance Print PortName where
    PortNameIdent id -> prPrec i 0 (concatD [prt 0 id])
    PortNameInteger n -> prPrec i 0 (concatD [prt 0 n])
 
+  prtList es = case es of
+   [x] -> (concatD [prt 0 x])
+   x:xs -> (concatD [prt 0 x , doc (showString ",") , prt 0 xs])
 
 

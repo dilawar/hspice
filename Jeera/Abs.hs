@@ -13,74 +13,77 @@ data Statement =
   deriving (Eq,Ord,Show)
 
 data DeviceDecl =
-   SimpleDevice InstanceName SimpleDeviceType [DeviceStatement]
- | TwoPortDevice InstanceName [DeviceStatement]
+   Device InstanceName DeviceType [DeviceStatement]
   deriving (Eq,Ord,Show)
 
-data SimpleDeviceType =
+data DeviceType =
    Resistor
  | Inductor
  | Capacitor
+ | VSource
+ | ISource
+ | GenericDevice
   deriving (Eq,Ord,Show)
 
 data DeviceStatement =
-   DeviceStatement LHSExpression RHSExpression
+   PortDeclaration PortDirection [PortName]
+ | ValueExpr RHSDeviceExpr
+ | ParameterAssignmentExpr ParameterName RHSDeviceExpr
+ | InitialConditionExpr ParameterName RHSDeviceExpr
+ | PortRelation FunctionOnPort PortName RHSDeviceExpr
   deriving (Eq,Ord,Show)
 
-data LHSExpression =
-   LHSExpressionValueExpression ValueExpression
- | LHSExpressionFunctionExpression FunctionExpression
- | LHSExpressionInOutPortVariable InOutPortVariable
- | LHSExpressionIdent Ident
+data PortRelationExpr =
+   PortRelationExpr FunctionOnPort PortName
   deriving (Eq,Ord,Show)
 
-data FunctionExpression =
-   FunctionExpression Ident Ident
+data PortDirection =
+   InputPort
+ | OutputPort
   deriving (Eq,Ord,Show)
 
-data ValueExpression =
-   ValueExpression
+data FunctionOnPort =
+   FunctionOnPort_V
+ | FunctionOnPort_I
   deriving (Eq,Ord,Show)
 
-data InOutPortVariable =
-   InputVariable
- | OutputVariable
+data ParameterName =
+   ParameterName Ident
   deriving (Eq,Ord,Show)
 
-data RHSExpression =
-   RHSExpressionSimpleExpression SimpleExpression
- | RHSExpressionFunctionExpression FunctionExpression
- | RHSExpressionMathExpression MathExpression
- | RHSExpressionExpression Expression
+data RHSDeviceExpr =
+   RHSDeviceExprSimpleExpr SimpleExpr
+ | RHSDeviceExprPortRelationExpr PortRelationExpr
+ | RHSDeviceExprMathExpr MathExpr
+ | RHSDeviceExprExpr Expr
   deriving (Eq,Ord,Show)
 
-data SimpleExpression =
-   ExpressionDouble Double
- | ExpressionInteger Integer
+data SimpleExpr =
+   ExprDouble Double
+ | ExprInteger Integer
   deriving (Eq,Ord,Show)
 
-data Expression =
-   PortExpr PortExpression
- | MathExpr MathExpression
- | NumericExpr NumericExpression
+data Expr =
+   MathExpr MathExpr
+ | NumericExpr NumericExpr
   deriving (Eq,Ord,Show)
 
-data NumericExpression =
-   NumericExpressionInteger Integer
- | NumericExpressionDouble Double
+data NumericExpr =
+   NumericExprInteger Integer
+ | NumericExprDouble Double
   deriving (Eq,Ord,Show)
 
-data PortExpression =
-   PortExpression PortName PortName
+data PortExpr =
+   PortExpr PortName PortName
   deriving (Eq,Ord,Show)
 
-data MathExpression =
-   MathExpression_1 RHSExpression RHSExpression
- | MathExpression_2 RHSExpression RHSExpression
- | MathExpression_3 RHSExpression RHSExpression
- | MathExpression_4 RHSExpression RHSExpression
- | MathExpression_5 MathExpression
- | MathExpressionIdent Ident
+data MathExpr =
+   MathExpr_1 RHSDeviceExpr RHSDeviceExpr
+ | MathExpr_2 RHSDeviceExpr RHSDeviceExpr
+ | MathExpr_3 RHSDeviceExpr RHSDeviceExpr
+ | MathExpr_4 RHSDeviceExpr RHSDeviceExpr
+ | MathExpr_5 MathExpr
+ | MathExprIdent Ident
   deriving (Eq,Ord,Show)
 
 data InstanceName =

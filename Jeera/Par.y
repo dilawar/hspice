@@ -26,13 +26,19 @@ import Jeera.ErrM
  '=' { PT _ (TS _ 9) }
  'Capacitor' { PT _ (TS _ 10) }
  'Device' { PT _ (TS _ 11) }
- 'Inductor' { PT _ (TS _ 12) }
- 'Resistor' { PT _ (TS _ 13) }
- 'input' { PT _ (TS _ 14) }
- 'output' { PT _ (TS _ 15) }
- 'value' { PT _ (TS _ 16) }
- '{' { PT _ (TS _ 17) }
- '}' { PT _ (TS _ 18) }
+ 'I' { PT _ (TS _ 12) }
+ 'ISource' { PT _ (TS _ 13) }
+ 'Inductor' { PT _ (TS _ 14) }
+ 'Resistor' { PT _ (TS _ 15) }
+ 'V' { PT _ (TS _ 16) }
+ 'VSource' { PT _ (TS _ 17) }
+ 'in' { PT _ (TS _ 18) }
+ 'init' { PT _ (TS _ 19) }
+ 'out' { PT _ (TS _ 20) }
+ 'param' { PT _ (TS _ 21) }
+ 'value' { PT _ (TS _ 22) }
+ '{' { PT _ (TS _ 23) }
+ '}' { PT _ (TS _ 24) }
 
 L_ident  { PT _ (TV $$) }
 L_doubl  { PT _ (TD $$) }
@@ -60,18 +66,24 @@ Statement : DeviceDecl { DeviceDecl $1 }
 
 
 DeviceDecl :: { DeviceDecl }
-DeviceDecl : InstanceName '=' SimpleDeviceType '{' ListDeviceStatement '}' { SimpleDevice $1 $3 $5 } 
-  | InstanceName '=' 'Device' '{' ListDeviceStatement '}' { TwoPortDevice $1 $5 }
+DeviceDecl : InstanceName '=' DeviceType '{' ListDeviceStatement '}' { Device $1 $3 $5 } 
 
 
-SimpleDeviceType :: { SimpleDeviceType }
-SimpleDeviceType : 'Resistor' { Resistor } 
+DeviceType :: { DeviceType }
+DeviceType : 'Resistor' { Resistor } 
   | 'Inductor' { Inductor }
   | 'Capacitor' { Capacitor }
+  | 'VSource' { VSource }
+  | 'ISource' { ISource }
+  | 'Device' { GenericDevice }
 
 
 DeviceStatement :: { DeviceStatement }
-DeviceStatement : LHSExpression '=' RHSExpression { DeviceStatement $1 $3 } 
+DeviceStatement : PortDirection ListPortName { PortDeclaration $1 $2 } 
+  | 'value' '=' RHSDeviceExpr { ValueExpr $3 }
+  | 'param' ParameterName '=' RHSDeviceExpr { ParameterAssignmentExpr $2 $4 }
+  | 'init' ParameterName '=' RHSDeviceExpr { InitialConditionExpr $2 $4 }
+  | FunctionOnPort '(' PortName ')' '=' RHSDeviceExpr { PortRelation $1 $3 $6 }
 
 
 ListDeviceStatement :: { [DeviceStatement] }
@@ -79,60 +91,57 @@ ListDeviceStatement : DeviceStatement ';' { (:[]) $1 }
   | DeviceStatement ';' ListDeviceStatement { (:) $1 $3 }
 
 
-LHSExpression :: { LHSExpression }
-LHSExpression : ValueExpression { LHSExpressionValueExpression $1 } 
-  | FunctionExpression { LHSExpressionFunctionExpression $1 }
-  | InOutPortVariable { LHSExpressionInOutPortVariable $1 }
-  | Ident { LHSExpressionIdent $1 }
+PortRelationExpr :: { PortRelationExpr }
+PortRelationExpr : FunctionOnPort '(' PortName ')' { PortRelationExpr $1 $3 } 
 
 
-FunctionExpression :: { FunctionExpression }
-FunctionExpression : Ident '(' Ident ')' { FunctionExpression $1 $3 } 
+PortDirection :: { PortDirection }
+PortDirection : 'in' { InputPort } 
+  | 'out' { OutputPort }
 
 
-ValueExpression :: { ValueExpression }
-ValueExpression : 'value' { ValueExpression } 
+FunctionOnPort :: { FunctionOnPort }
+FunctionOnPort : 'V' { FunctionOnPort_V } 
+  | 'I' { FunctionOnPort_I }
 
 
-InOutPortVariable :: { InOutPortVariable }
-InOutPortVariable : 'input' { InputVariable } 
-  | 'output' { OutputVariable }
+ParameterName :: { ParameterName }
+ParameterName : Ident { ParameterName $1 } 
 
 
-RHSExpression :: { RHSExpression }
-RHSExpression : SimpleExpression { RHSExpressionSimpleExpression $1 } 
-  | FunctionExpression { RHSExpressionFunctionExpression $1 }
-  | MathExpression { RHSExpressionMathExpression $1 }
-  | Expression { RHSExpressionExpression $1 }
+RHSDeviceExpr :: { RHSDeviceExpr }
+RHSDeviceExpr : SimpleExpr { RHSDeviceExprSimpleExpr $1 } 
+  | PortRelationExpr { RHSDeviceExprPortRelationExpr $1 }
+  | MathExpr { RHSDeviceExprMathExpr $1 }
+  | Expr { RHSDeviceExprExpr $1 }
 
 
-SimpleExpression :: { SimpleExpression }
-SimpleExpression : Double { ExpressionDouble $1 } 
-  | Integer { ExpressionInteger $1 }
+SimpleExpr :: { SimpleExpr }
+SimpleExpr : Double { ExprDouble $1 } 
+  | Integer { ExprInteger $1 }
 
 
-Expression :: { Expression }
-Expression : PortExpression { PortExpr $1 } 
-  | MathExpression { MathExpr $1 }
-  | NumericExpression { NumericExpr $1 }
+Expr :: { Expr }
+Expr : MathExpr { MathExpr $1 } 
+  | NumericExpr { NumericExpr $1 }
 
 
-NumericExpression :: { NumericExpression }
-NumericExpression : Integer { NumericExpressionInteger $1 } 
-  | Double { NumericExpressionDouble $1 }
+NumericExpr :: { NumericExpr }
+NumericExpr : Integer { NumericExprInteger $1 } 
+  | Double { NumericExprDouble $1 }
 
 
-PortExpression :: { PortExpression }
-PortExpression : '(' PortName ',' PortName ')' { PortExpression $2 $4 } 
+PortExpr :: { PortExpr }
+PortExpr : '(' PortName ',' PortName ')' { PortExpr $2 $4 } 
 
 
-MathExpression :: { MathExpression }
-MathExpression : RHSExpression '*' RHSExpression { MathExpression_1 $1 $3 } 
-  | RHSExpression '+' RHSExpression { MathExpression_2 $1 $3 }
-  | RHSExpression '/' RHSExpression { MathExpression_3 $1 $3 }
-  | RHSExpression '-' RHSExpression { MathExpression_4 $1 $3 }
-  | '(' MathExpression ')' { MathExpression_5 $2 }
-  | Ident { MathExpressionIdent $1 }
+MathExpr :: { MathExpr }
+MathExpr : RHSDeviceExpr '*' RHSDeviceExpr { MathExpr_1 $1 $3 } 
+  | RHSDeviceExpr '+' RHSDeviceExpr { MathExpr_2 $1 $3 }
+  | RHSDeviceExpr '/' RHSDeviceExpr { MathExpr_3 $1 $3 }
+  | RHSDeviceExpr '-' RHSDeviceExpr { MathExpr_4 $1 $3 }
+  | '(' MathExpr ')' { MathExpr_5 $2 }
+  | Ident { MathExprIdent $1 }
 
 
 InstanceName :: { InstanceName }
@@ -142,6 +151,11 @@ InstanceName : Ident { InstanceName $1 }
 PortName :: { PortName }
 PortName : Ident { PortNameIdent $1 } 
   | Integer { PortNameInteger $1 }
+
+
+ListPortName :: { [PortName] }
+ListPortName : PortName { (:[]) $1 } 
+  | PortName ',' ListPortName { (:) $1 $3 }
 
 
 

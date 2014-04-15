@@ -26,86 +26,89 @@ transStatement x = case x of
 
 transDeviceDecl :: DeviceDecl -> Result
 transDeviceDecl x = case x of
-  SimpleDevice instancename simpledevicetype devicestatements  -> failure x
-  TwoPortDevice instancename devicestatements  -> failure x
+  Device instancename devicetype devicestatements  -> failure x
 
 
-transSimpleDeviceType :: SimpleDeviceType -> Result
-transSimpleDeviceType x = case x of
+transDeviceType :: DeviceType -> Result
+transDeviceType x = case x of
   Resistor  -> failure x
   Inductor  -> failure x
   Capacitor  -> failure x
+  VSource  -> failure x
+  ISource  -> failure x
+  GenericDevice  -> failure x
 
 
 transDeviceStatement :: DeviceStatement -> Result
 transDeviceStatement x = case x of
-  DeviceStatement lhsexpression rhsexpression  -> failure x
+  PortDeclaration portdirection portnames  -> failure x
+  ValueExpr rhsdeviceexpr  -> failure x
+  ParameterAssignmentExpr parametername rhsdeviceexpr  -> failure x
+  InitialConditionExpr parametername rhsdeviceexpr  -> failure x
+  PortRelation functiononport portname rhsdeviceexpr  -> failure x
 
 
-transLHSExpression :: LHSExpression -> Result
-transLHSExpression x = case x of
-  LHSExpressionValueExpression valueexpression  -> failure x
-  LHSExpressionFunctionExpression functionexpression  -> failure x
-  LHSExpressionInOutPortVariable inoutportvariable  -> failure x
-  LHSExpressionIdent id  -> failure x
+transPortRelationExpr :: PortRelationExpr -> Result
+transPortRelationExpr x = case x of
+  PortRelationExpr functiononport portname  -> failure x
 
 
-transFunctionExpression :: FunctionExpression -> Result
-transFunctionExpression x = case x of
-  FunctionExpression id1 id2  -> failure x
+transPortDirection :: PortDirection -> Result
+transPortDirection x = case x of
+  InputPort  -> failure x
+  OutputPort  -> failure x
 
 
-transValueExpression :: ValueExpression -> Result
-transValueExpression x = case x of
-  ValueExpression  -> failure x
+transFunctionOnPort :: FunctionOnPort -> Result
+transFunctionOnPort x = case x of
+  FunctionOnPort_V  -> failure x
+  FunctionOnPort_I  -> failure x
 
 
-transInOutPortVariable :: InOutPortVariable -> Result
-transInOutPortVariable x = case x of
-  InputVariable  -> failure x
-  OutputVariable  -> failure x
+transParameterName :: ParameterName -> Result
+transParameterName x = case x of
+  ParameterName id  -> failure x
 
 
-transRHSExpression :: RHSExpression -> Result
-transRHSExpression x = case x of
-  RHSExpressionSimpleExpression simpleexpression  -> failure x
-  RHSExpressionFunctionExpression functionexpression  -> failure x
-  RHSExpressionMathExpression mathexpression  -> failure x
-  RHSExpressionExpression expression  -> failure x
+transRHSDeviceExpr :: RHSDeviceExpr -> Result
+transRHSDeviceExpr x = case x of
+  RHSDeviceExprSimpleExpr simpleexpr  -> failure x
+  RHSDeviceExprPortRelationExpr portrelationexpr  -> failure x
+  RHSDeviceExprMathExpr mathexpr  -> failure x
+  RHSDeviceExprExpr expr  -> failure x
 
 
-transSimpleExpression :: SimpleExpression -> Result
-transSimpleExpression x = case x of
-  ExpressionDouble d  -> failure x
-  ExpressionInteger n  -> failure x
+transSimpleExpr :: SimpleExpr -> Result
+transSimpleExpr x = case x of
+  ExprDouble d  -> failure x
+  ExprInteger n  -> failure x
 
 
-transExpression :: Expression -> Result
-transExpression x = case x of
-  PortExpr portexpression  -> failure x
-  MathExpr mathexpression  -> failure x
-  NumericExpr numericexpression  -> failure x
+transExpr :: Expr -> Result
+transExpr x = case x of
+  MathExpr mathexpr  -> failure x
+  NumericExpr numericexpr  -> failure x
 
 
-transNumericExpression :: NumericExpression -> Result
-transNumericExpression x = case x of
-  NumericExpressionInteger n  -> failure x
-  NumericExpressionDouble d  -> failure x
+transNumericExpr :: NumericExpr -> Result
+transNumericExpr x = case x of
+  NumericExprInteger n  -> failure x
+  NumericExprDouble d  -> failure x
 
 
-transPortExpression :: PortExpression -> Result
-transPortExpression x = case x of
-  PortExpression portname1 portname2  -> failure x
+transPortExpr :: PortExpr -> Result
+transPortExpr x = case x of
+  PortExpr portname1 portname2  -> failure x
 
 
-transMathExpression :: MathExpression -> Result
-transMathExpression x = case x of
-  MathExpression_1 rhsexpression1 rhsexpression2  -> failure x
-  MathExpression_2 rhsexpression1 rhsexpression2  -> failure x
-  MathExpression_3 rhsexpression1 rhsexpression2  -> failure x
-  MathExpression_4 rhsexpression1 rhsexpression2  -> failure x
-  MathExpression_5 mathexpression  -> failure x
-  MathExpressionIdent id  -> failure x
+transMathExpr :: MathExpr -> Result
+transMathExpr x = case x of
+  MathExpr_1 rhsdeviceexpr1 rhsdeviceexpr2  -> failure x
+  MathExpr_2 rhsdeviceexpr1 rhsdeviceexpr2  -> failure x
+  MathExpr_3 rhsdeviceexpr1 rhsdeviceexpr2  -> failure x
+  MathExpr_4 rhsdeviceexpr1 rhsdeviceexpr2  -> failure x
+  MathExpr_5 mathexpr  -> failure x
+  MathExprIdent id  -> failure x
 
 
 transInstanceName :: InstanceName -> Result

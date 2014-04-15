@@ -1,59 +1,78 @@
 {- This is BNF grammar -}
 entrypoints Program;
+
+-- Program is made of one or more statements. They all terminate by character ;.
 Program. Program ::= [Statement];
 terminator nonempty Statement ";";
+
+{- We have two type of statements in this langauge: DeviceDecl and Connection.
+DeviceDecl declares a device while Connection specifies the wires connecting two
+or more Devices.
+-}
 
 DeviceDecl. Statement ::= DeviceDecl;
 -- Connection. Statement ::= Connection;
 
--- Declare device
-SimpleDevice. DeviceDecl ::= InstanceName "=" SimpleDeviceType "{" [DeviceStatement] "}";
-TwoPortDevice. DeviceDecl ::= InstanceName "=" "Device" "{" [DeviceStatement] "}";
+{- Generic device is the two port device. There are various types of Devices:
+resistor, inductor, capacitor, etc. 
+-}
+
+Device. DeviceDecl ::= InstanceName "=" DeviceType "{" [DeviceStatement] "}";
 
 -- Device types
-Resistor. SimpleDeviceType ::= "Resistor";
-Inductor. SimpleDeviceType ::= "Inductor";
-Capacitor. SimpleDeviceType ::= "Capacitor";
+Resistor. DeviceType ::= "Resistor";
+Inductor. DeviceType ::= "Inductor";
+Capacitor. DeviceType ::= "Capacitor";
+VSource. DeviceType ::= "VSource";
+ISource. DeviceType ::= "ISource";
+GenericDevice. DeviceType ::= "Device";
 
--- Device statement
-DeviceStatement. DeviceStatement ::= LHSExpression "=" RHSExpression;
+
+{- DeviceStatement 
+Each device must have input and output ports. If not given then generate them
+while inserting them into network. If device is GenericDevice, then we should
+also have input output relation.
+-}
+PortDeclaration. DeviceStatement ::= PortDirection [PortName];
+ValueExpr. DeviceStatement ::= "value" "=" RHSDeviceExpr;
+ParameterAssignmentExpr. DeviceStatement ::= "param" ParameterName "=" RHSDeviceExpr;
+InitialConditionExpr. DeviceStatement ::=  "init" ParameterName "=" RHSDeviceExpr;
+PortRelation. DeviceStatement ::= FunctionOnPort "(" PortName ")" "=" RHSDeviceExpr;
 terminator nonempty DeviceStatement ";";
 
-rules LHSExpression ::= ValueExpression
-                    | FunctionExpression
-                    | InOutPortVariable
-                    | Ident 
-                    ;
+PortRelationExpr. PortRelationExpr ::= FunctionOnPort "(" PortName ")";
+InputPort. PortDirection ::= "in";
+OutputPort. PortDirection ::= "out";
 
-FunctionExpression. FunctionExpression ::= Ident "(" Ident ")";
-ValueExpression. ValueExpression ::= "value";
-InputVariable. InOutPortVariable ::= "input";
-OutputVariable. InOutPortVariable ::= "output";
+-- Function on ports
+rules FunctionOnPort ::= "V" | "I";
 
-rules RHSExpression ::= SimpleExpression 
-    | FunctionExpression
-    | MathExpression
-    | Expression 
+-- ParameterName 
+ParameterName. ParameterName ::= Ident;
+
+rules RHSDeviceExpr ::= SimpleExpr 
+    | PortRelationExpr
+    | MathExpr
+    | Expr 
     ;
 
-ExpressionDouble. SimpleExpression ::= Double;
-ExpressionInteger. SimpleExpression ::= Integer;
+ExprDouble. SimpleExpr ::= Double;
+ExprInteger. SimpleExpr ::= Integer;
 
 
-PortExpr. Expression ::= PortExpression;
-MathExpr. Expression ::= MathExpression;
-NumericExpr. Expression ::= NumericExpression;
-rules NumericExpression ::= Integer 
+MathExpr. Expr ::= MathExpr;
+NumericExpr. Expr ::= NumericExpr;
+rules NumericExpr ::= Integer 
     | Double 
     ;
 
-PortExpression. PortExpression ::= "(" PortName "," PortName ")";
+PortExpr. PortExpr ::= "(" PortName "," PortName ")";
 
-rules MathExpression ::=  RHSExpression  "*" RHSExpression 
-        | RHSExpression "+" RHSExpression 
-        | RHSExpression "/" RHSExpression 
-        | RHSExpression "-" RHSExpression
-        | "(" MathExpression ")"
+rules MathExpr ::=  RHSDeviceExpr  "*" RHSDeviceExpr 
+        | RHSDeviceExpr "+" RHSDeviceExpr 
+        | RHSDeviceExpr "/" RHSDeviceExpr 
+        | RHSDeviceExpr "-" RHSDeviceExpr
+        | "(" MathExpr ")"
         | Ident
         ;
 
@@ -63,10 +82,7 @@ InstanceName. InstanceName ::= Ident;
 
 -- Port name
 rules PortName ::= Ident | Integer;
-
--- Declare connections
-
-
+separator nonempty PortName ",";
 
 -- comments 
 comment "//";

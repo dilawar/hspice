@@ -32,8 +32,10 @@ Integer literals //Integer// are nonempty sequences of digits.
 The set of reserved words is the set of terminals appearing in the grammar. Those reserved words that consist of non-letter characters are called symbols, and they are treated in a different way from those that are similar to identifiers. The lexer follows rules familiar from languages like Haskell, C, and Java, including longest match and spacing conventions.
 
 The reserved words used in Jeera are the following:
-  | ``Capacitor`` | ``Device`` | ``Inductor`` | ``Resistor``
-  | ``input`` | ``output`` | ``value`` | 
+  | ``Capacitor`` | ``Device`` | ``I`` | ``ISource``
+  | ``Inductor`` | ``Resistor`` | ``V`` | ``VSource``
+  | ``in`` | ``init`` | ``out`` | ``param``
+  | ``value`` |  |  | 
 
 The symbols used in Jeera are the following:
   | ; | = | { | }
@@ -53,42 +55,47 @@ All other symbols are terminals.
   | //[Statement]// | -> | //Statement// ``;`` 
   |  |  **|**  | //Statement// ``;`` //[Statement]// 
   | //Statement// | -> | //DeviceDecl// 
-  | //DeviceDecl// | -> | //InstanceName// ``=`` //SimpleDeviceType// ``{`` //[DeviceStatement]// ``}`` 
-  |  |  **|**  | //InstanceName// ``=`` ``Device`` ``{`` //[DeviceStatement]// ``}`` 
-  | //SimpleDeviceType// | -> | ``Resistor`` 
+  | //DeviceDecl// | -> | //InstanceName// ``=`` //DeviceType// ``{`` //[DeviceStatement]// ``}`` 
+  | //DeviceType// | -> | ``Resistor`` 
   |  |  **|**  | ``Inductor`` 
   |  |  **|**  | ``Capacitor`` 
-  | //DeviceStatement// | -> | //LHSExpression// ``=`` //RHSExpression// 
+  |  |  **|**  | ``VSource`` 
+  |  |  **|**  | ``ISource`` 
+  |  |  **|**  | ``Device`` 
+  | //DeviceStatement// | -> | //PortDirection// //[PortName]// 
+  |  |  **|**  | ``value`` ``=`` //RHSDeviceExpr// 
+  |  |  **|**  | ``param`` //ParameterName// ``=`` //RHSDeviceExpr// 
+  |  |  **|**  | ``init`` //ParameterName// ``=`` //RHSDeviceExpr// 
+  |  |  **|**  | //FunctionOnPort// ``(`` //PortName// ``)`` ``=`` //RHSDeviceExpr// 
   | //[DeviceStatement]// | -> | //DeviceStatement// ``;`` 
   |  |  **|**  | //DeviceStatement// ``;`` //[DeviceStatement]// 
-  | //LHSExpression// | -> | //ValueExpression// 
-  |  |  **|**  | //FunctionExpression// 
-  |  |  **|**  | //InOutPortVariable// 
-  |  |  **|**  | //Ident// 
-  | //FunctionExpression// | -> | //Ident// ``(`` //Ident// ``)`` 
-  | //ValueExpression// | -> | ``value`` 
-  | //InOutPortVariable// | -> | ``input`` 
-  |  |  **|**  | ``output`` 
-  | //RHSExpression// | -> | //SimpleExpression// 
-  |  |  **|**  | //FunctionExpression// 
-  |  |  **|**  | //MathExpression// 
-  |  |  **|**  | //Expression// 
-  | //SimpleExpression// | -> | //Double// 
+  | //PortRelationExpr// | -> | //FunctionOnPort// ``(`` //PortName// ``)`` 
+  | //PortDirection// | -> | ``in`` 
+  |  |  **|**  | ``out`` 
+  | //FunctionOnPort// | -> | ``V`` 
+  |  |  **|**  | ``I`` 
+  | //ParameterName// | -> | //Ident// 
+  | //RHSDeviceExpr// | -> | //SimpleExpr// 
+  |  |  **|**  | //PortRelationExpr// 
+  |  |  **|**  | //MathExpr// 
+  |  |  **|**  | //Expr// 
+  | //SimpleExpr// | -> | //Double// 
   |  |  **|**  | //Integer// 
-  | //Expression// | -> | //PortExpression// 
-  |  |  **|**  | //MathExpression// 
-  |  |  **|**  | //NumericExpression// 
-  | //NumericExpression// | -> | //Integer// 
+  | //Expr// | -> | //MathExpr// 
+  |  |  **|**  | //NumericExpr// 
+  | //NumericExpr// | -> | //Integer// 
   |  |  **|**  | //Double// 
-  | //PortExpression// | -> | ``(`` //PortName// ``,`` //PortName// ``)`` 
-  | //MathExpression// | -> | //RHSExpression// ``*`` //RHSExpression// 
-  |  |  **|**  | //RHSExpression// ``+`` //RHSExpression// 
-  |  |  **|**  | //RHSExpression// ``/`` //RHSExpression// 
-  |  |  **|**  | //RHSExpression// ``-`` //RHSExpression// 
-  |  |  **|**  | ``(`` //MathExpression// ``)`` 
+  | //PortExpr// | -> | ``(`` //PortName// ``,`` //PortName// ``)`` 
+  | //MathExpr// | -> | //RHSDeviceExpr// ``*`` //RHSDeviceExpr// 
+  |  |  **|**  | //RHSDeviceExpr// ``+`` //RHSDeviceExpr// 
+  |  |  **|**  | //RHSDeviceExpr// ``/`` //RHSDeviceExpr// 
+  |  |  **|**  | //RHSDeviceExpr// ``-`` //RHSDeviceExpr// 
+  |  |  **|**  | ``(`` //MathExpr// ``)`` 
   |  |  **|**  | //Ident// 
   | //InstanceName// | -> | //Ident// 
   | //PortName// | -> | //Ident// 
   |  |  **|**  | //Integer// 
+  | //[PortName]// | -> | //PortName// 
+  |  |  **|**  | //PortName// ``,`` //[PortName]// 
 
 

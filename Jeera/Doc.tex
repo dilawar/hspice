@@ -46,8 +46,10 @@ The set of reserved words is the set of terminals appearing in the grammar. Thos
 The reserved words used in Jeera are the following: \\
 
 \begin{tabular}{lll}
-{\reserved{Capacitor}} &{\reserved{Device}} &{\reserved{Inductor}} \\
-{\reserved{Resistor}} &{\reserved{input}} &{\reserved{output}} \\
+{\reserved{Capacitor}} &{\reserved{Device}} &{\reserved{I}} \\
+{\reserved{ISource}} &{\reserved{Inductor}} &{\reserved{Resistor}} \\
+{\reserved{V}} &{\reserved{VSource}} &{\reserved{in}} \\
+{\reserved{init}} &{\reserved{out}} &{\reserved{param}} \\
 {\reserved{value}} & & \\
 \end{tabular}\\
 
@@ -83,18 +85,24 @@ All other symbols are terminals.\\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{DeviceDecl}} & {\arrow}  &{\nonterminal{InstanceName}} {\terminal{{$=$}}} {\nonterminal{SimpleDeviceType}} {\terminal{\{}} {\nonterminal{ListDeviceStatement}} {\terminal{\}}}  \\
- & {\delimit}  &{\nonterminal{InstanceName}} {\terminal{{$=$}}} {\terminal{Device}} {\terminal{\{}} {\nonterminal{ListDeviceStatement}} {\terminal{\}}}  \\
+{\nonterminal{DeviceDecl}} & {\arrow}  &{\nonterminal{InstanceName}} {\terminal{{$=$}}} {\nonterminal{DeviceType}} {\terminal{\{}} {\nonterminal{ListDeviceStatement}} {\terminal{\}}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{SimpleDeviceType}} & {\arrow}  &{\terminal{Resistor}}  \\
+{\nonterminal{DeviceType}} & {\arrow}  &{\terminal{Resistor}}  \\
  & {\delimit}  &{\terminal{Inductor}}  \\
  & {\delimit}  &{\terminal{Capacitor}}  \\
+ & {\delimit}  &{\terminal{VSource}}  \\
+ & {\delimit}  &{\terminal{ISource}}  \\
+ & {\delimit}  &{\terminal{Device}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{DeviceStatement}} & {\arrow}  &{\nonterminal{LHSExpression}} {\terminal{{$=$}}} {\nonterminal{RHSExpression}}  \\
+{\nonterminal{DeviceStatement}} & {\arrow}  &{\nonterminal{PortDirection}} {\nonterminal{ListPortName}}  \\
+ & {\delimit}  &{\terminal{value}} {\terminal{{$=$}}} {\nonterminal{RHSDeviceExpr}}  \\
+ & {\delimit}  &{\terminal{param}} {\nonterminal{ParameterName}} {\terminal{{$=$}}} {\nonterminal{RHSDeviceExpr}}  \\
+ & {\delimit}  &{\terminal{init}} {\nonterminal{ParameterName}} {\terminal{{$=$}}} {\nonterminal{RHSDeviceExpr}}  \\
+ & {\delimit}  &{\nonterminal{FunctionOnPort}} {\terminal{(}} {\nonterminal{PortName}} {\terminal{)}} {\terminal{{$=$}}} {\nonterminal{RHSDeviceExpr}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
@@ -103,58 +111,55 @@ All other symbols are terminals.\\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{LHSExpression}} & {\arrow}  &{\nonterminal{ValueExpression}}  \\
- & {\delimit}  &{\nonterminal{FunctionExpression}}  \\
- & {\delimit}  &{\nonterminal{InOutPortVariable}}  \\
- & {\delimit}  &{\nonterminal{Ident}}  \\
+{\nonterminal{PortRelationExpr}} & {\arrow}  &{\nonterminal{FunctionOnPort}} {\terminal{(}} {\nonterminal{PortName}} {\terminal{)}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{FunctionExpression}} & {\arrow}  &{\nonterminal{Ident}} {\terminal{(}} {\nonterminal{Ident}} {\terminal{)}}  \\
+{\nonterminal{PortDirection}} & {\arrow}  &{\terminal{in}}  \\
+ & {\delimit}  &{\terminal{out}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{ValueExpression}} & {\arrow}  &{\terminal{value}}  \\
+{\nonterminal{FunctionOnPort}} & {\arrow}  &{\terminal{V}}  \\
+ & {\delimit}  &{\terminal{I}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{InOutPortVariable}} & {\arrow}  &{\terminal{input}}  \\
- & {\delimit}  &{\terminal{output}}  \\
+{\nonterminal{ParameterName}} & {\arrow}  &{\nonterminal{Ident}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{RHSExpression}} & {\arrow}  &{\nonterminal{SimpleExpression}}  \\
- & {\delimit}  &{\nonterminal{FunctionExpression}}  \\
- & {\delimit}  &{\nonterminal{MathExpression}}  \\
- & {\delimit}  &{\nonterminal{Expression}}  \\
+{\nonterminal{RHSDeviceExpr}} & {\arrow}  &{\nonterminal{SimpleExpr}}  \\
+ & {\delimit}  &{\nonterminal{PortRelationExpr}}  \\
+ & {\delimit}  &{\nonterminal{MathExpr}}  \\
+ & {\delimit}  &{\nonterminal{Expr}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{SimpleExpression}} & {\arrow}  &{\nonterminal{Double}}  \\
+{\nonterminal{SimpleExpr}} & {\arrow}  &{\nonterminal{Double}}  \\
  & {\delimit}  &{\nonterminal{Integer}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{Expression}} & {\arrow}  &{\nonterminal{PortExpression}}  \\
- & {\delimit}  &{\nonterminal{MathExpression}}  \\
- & {\delimit}  &{\nonterminal{NumericExpression}}  \\
+{\nonterminal{Expr}} & {\arrow}  &{\nonterminal{MathExpr}}  \\
+ & {\delimit}  &{\nonterminal{NumericExpr}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{NumericExpression}} & {\arrow}  &{\nonterminal{Integer}}  \\
+{\nonterminal{NumericExpr}} & {\arrow}  &{\nonterminal{Integer}}  \\
  & {\delimit}  &{\nonterminal{Double}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{PortExpression}} & {\arrow}  &{\terminal{(}} {\nonterminal{PortName}} {\terminal{,}} {\nonterminal{PortName}} {\terminal{)}}  \\
+{\nonterminal{PortExpr}} & {\arrow}  &{\terminal{(}} {\nonterminal{PortName}} {\terminal{,}} {\nonterminal{PortName}} {\terminal{)}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{MathExpression}} & {\arrow}  &{\nonterminal{RHSExpression}} {\terminal{*}} {\nonterminal{RHSExpression}}  \\
- & {\delimit}  &{\nonterminal{RHSExpression}} {\terminal{{$+$}}} {\nonterminal{RHSExpression}}  \\
- & {\delimit}  &{\nonterminal{RHSExpression}} {\terminal{/}} {\nonterminal{RHSExpression}}  \\
- & {\delimit}  &{\nonterminal{RHSExpression}} {\terminal{{$-$}}} {\nonterminal{RHSExpression}}  \\
- & {\delimit}  &{\terminal{(}} {\nonterminal{MathExpression}} {\terminal{)}}  \\
+{\nonterminal{MathExpr}} & {\arrow}  &{\nonterminal{RHSDeviceExpr}} {\terminal{*}} {\nonterminal{RHSDeviceExpr}}  \\
+ & {\delimit}  &{\nonterminal{RHSDeviceExpr}} {\terminal{{$+$}}} {\nonterminal{RHSDeviceExpr}}  \\
+ & {\delimit}  &{\nonterminal{RHSDeviceExpr}} {\terminal{/}} {\nonterminal{RHSDeviceExpr}}  \\
+ & {\delimit}  &{\nonterminal{RHSDeviceExpr}} {\terminal{{$-$}}} {\nonterminal{RHSDeviceExpr}}  \\
+ & {\delimit}  &{\terminal{(}} {\nonterminal{MathExpr}} {\terminal{)}}  \\
  & {\delimit}  &{\nonterminal{Ident}}  \\
 \end{tabular}\\
 
@@ -165,6 +170,11 @@ All other symbols are terminals.\\
 \begin{tabular}{lll}
 {\nonterminal{PortName}} & {\arrow}  &{\nonterminal{Ident}}  \\
  & {\delimit}  &{\nonterminal{Integer}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListPortName}} & {\arrow}  &{\nonterminal{PortName}}  \\
+ & {\delimit}  &{\nonterminal{PortName}} {\terminal{,}} {\nonterminal{ListPortName}}  \\
 \end{tabular}\\
 
 
