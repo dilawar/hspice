@@ -171,11 +171,6 @@ instance Print NumericExpr where
    NumericExprDouble d -> prPrec i 0 (concatD [prt 0 d])
 
 
-instance Print PortExpr where
-  prt i e = case e of
-   PortExpr portname0 portname -> prPrec i 0 (concatD [doc (showString "(") , prt 0 portname0 , doc (showString ",") , prt 0 portname , doc (showString ")")])
-
-
 instance Print MathExpr where
   prt i e = case e of
    MathExpr_1 rhsdeviceexpr0 rhsdeviceexpr -> prPrec i 0 (concatD [prt 0 rhsdeviceexpr0 , doc (showString "*") , prt 0 rhsdeviceexpr])

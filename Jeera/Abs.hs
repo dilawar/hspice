@@ -73,10 +73,6 @@ data NumericExpr =
  | NumericExprDouble Double
   deriving (Eq,Ord,Show)
 
-data PortExpr =
-   PortExpr PortName PortName
-  deriving (Eq,Ord,Show)
-
 data MathExpr =
    MathExpr_1 RHSDeviceExpr RHSDeviceExpr
  | MathExpr_2 RHSDeviceExpr RHSDeviceExpr

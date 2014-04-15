@@ -96,11 +96,6 @@ transNumericExpr x = case x of
   NumericExprDouble d  -> failure x
 
 
-transPortExpr :: PortExpr -> Result
-transPortExpr x = case x of
-  PortExpr portname1 portname2  -> failure x
-
-
 transMathExpr :: MathExpr -> Result
 transMathExpr x = case x of
   MathExpr_1 rhsdeviceexpr1 rhsdeviceexpr2  -> failure x

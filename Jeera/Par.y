@@ -131,10 +131,6 @@ NumericExpr : Integer { NumericExprInteger $1 }
   | Double { NumericExprDouble $1 }
 
 
-PortExpr :: { PortExpr }
-PortExpr : '(' PortName ',' PortName ')' { PortExpr $2 $4 } 
-
-
 MathExpr :: { MathExpr }
 MathExpr : RHSDeviceExpr '*' RHSDeviceExpr { MathExpr_1 $1 $3 } 
   | RHSDeviceExpr '+' RHSDeviceExpr { MathExpr_2 $1 $3 }
