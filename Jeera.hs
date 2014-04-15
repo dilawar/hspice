@@ -34,6 +34,7 @@ run v p s = let ts = myLLexer s in case p ts of
                           showTree v tree
                           putStrLn "\nBuilding network"
                           buildNetwork tree
+                          putStrLn "\nDone"
 
 showTree :: (Show a, Print a) => Int -> a -> IO ()
 showTree v tree
@@ -46,5 +47,5 @@ main = do args <- getArgs
           case args of
             [] -> hGetContents stdin >>= run 2 pProgram
             "-s":fs -> mapM_ (runFile 0 pProgram) fs
-            fs -> mapM_ (runFile 2 pProgram) fs
+            fs -> mapM_ (runFile 2 pProgram) fs 
 
