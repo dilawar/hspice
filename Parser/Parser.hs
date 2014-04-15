@@ -3,7 +3,6 @@ module Parser.Parser where
 import Control.Monad (liftM)
 import Text.Parsec
 import Parser.Lexer
-import Text.Parsec.String 
 
 import Text.Parsec hiding (spaces)
 
@@ -55,10 +54,4 @@ eol =  try (string "\n\r")
     <|> string "\n"
     <|> string "\r"
 
--- Main function.
-main = do
-    result <- parseFromFile jeera "example.cir"
-    case result of 
-        Left err -> print err
-        Right xs -> print xs
-    putStrLn "Done"
+
