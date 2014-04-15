@@ -4,48 +4,9 @@ module Main where
 import System.IO ( stdin, hGetContents )
 import System.Environment ( getArgs, getProgName )
 
-import Jeera.Lex
-import Jeera.Par
-import Jeera.Skel
-import Jeera.Print
-import Jeera.Abs
-import Jeera.ErrM
-import AST.Network
+import Parser.Parser
+import AST.Network 
 
-type ParseFun a = [Token] -> Err a
-
-myLLexer = myLexer
-
-type Verbosity = Int
-
-putStrV :: Verbosity -> String -> IO ()
-putStrV v s = if v > 1 then putStrLn s else return ()
-
-runFile :: (Print a, Show a) => Verbosity -> ParseFun a -> FilePath -> IO ()
-runFile v p f = putStrLn f >> readFile f >>= run v p
-
-run :: (Print a, Show a) => Verbosity -> ParseFun a -> String -> IO ()
-run v p s = let ts = myLLexer s in case p ts of
-           Bad s    -> do putStrLn "\nParse              Failed...\n"
-                          putStrV v "Tokens:"
-                          putStrV v $ show ts
-                          putStrLn s
-           Ok  tree -> do putStrLn "\nParse Successful!"
-                          showTree v tree
-                          putStrLn "\nBuilding network"
-                          buildNetwork tree
-                          putStrLn "\nDone"
-
-showTree :: (Show a, Print a) => Int -> a -> IO ()
-showTree v tree
- = do
-      putStrV v $ "\n[Abstract Syntax]\n\n" ++ show tree
-      putStrV v $ "\n[Linearized tree]\n\n" ++ printTree tree
-
-main :: IO ()
-main = do args <- getArgs
-          case args of
-            [] -> hGetContents stdin >>= run 2 pProgram
-            "-s":fs -> mapM_ (runFile 0 pProgram) fs
-            fs -> mapM_ (runFile 2 pProgram) fs 
+main = do
+    putStrLn "Done"
 
