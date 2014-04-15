@@ -10,6 +10,7 @@ import Jeera.Skel
 import Jeera.Print
 import Jeera.Abs
 import Jeera.ErrM
+import AST.Network
 
 type ParseFun a = [Token] -> Err a
 
@@ -31,6 +32,8 @@ run v p s = let ts = myLLexer s in case p ts of
                           putStrLn s
            Ok  tree -> do putStrLn "\nParse Successful!"
                           showTree v tree
+                          putStrLn "\nBuilding network"
+                          buildNetwork tree
 
 showTree :: (Show a, Print a) => Int -> a -> IO ()
 showTree v tree

@@ -1,8 +1,8 @@
 #!/bin/bash
-set +e
+set -e
 make clean
 bnfc -m -haskell -d Jeera.cf
 if [[ $1 ]]; then
-    ghc Jeera.hs
-    ./Jeera < example.cir
+    ghc Jeera.hs -o jeera
+    ./jeera < example.cir
 fi
