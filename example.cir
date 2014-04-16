@@ -1,15 +1,14 @@
 r1 = Resistor {
-    value = 10000;
+    in a;
+    value = 10000.0;
     };
-    
 c1 = Capacitor {
-    value = 100000;
+    value = 100000.0;
     };
-
 d1 = Device {
         in a;
-        out b, 0;
-        V(b) = I(a) + 3.0;
+        out b, o;
+        /*V(b) = I(a) + 3.0;*/
 };
 
 // Add them in parallel

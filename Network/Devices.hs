@@ -1,5 +1,7 @@
 module Network.Devices where 
 
+import Data.Either
+
 -- Node is a point in fabric. 
 data Node = Node {node :: (Int, Int)} deriving (Show, Eq) 
 
@@ -54,7 +56,7 @@ defaultDevice = Device {
 data StmtType =
     InPortExpr { inPorts :: [String] }
     | OutPortExpr { outPorts :: [String] }
-    | ValueExpr { vParamName :: String, vValue :: Double }
+    | ValueExpr { vValue :: Double }
     | ParamExpr { paramName :: String, paramValue :: Double }
     | InitExpr { pName :: String, pValue :: Double }
     | FunctionExpr { }
