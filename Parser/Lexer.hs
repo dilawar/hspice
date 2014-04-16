@@ -13,7 +13,7 @@ jeeraDef = emptyDef {
         , P.identStart     = letter <|> char '_'
         , P.identLetter    = alphaNum <|> oneOf "_'"
         , P.opStart        = P.opLetter emptyDef
-        , P.opLetter       = oneOf ":!#$%&*+./<=>?@\\^|-~"
+        , P.opLetter       = oneOf ":!#$%&.@\\^|~"
         , P.reservedOpNames= ["=", "||", "--", "-|", "|-" ]
         , P.reservedNames  = ["Resistor", "Capacitor", "Inductor"
                             , "VSource", "ISource"

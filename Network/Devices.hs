@@ -15,8 +15,8 @@ data Fabric = Fabric {network :: [Device], topology :: [Wire] } deriving Show
 data Port = Port {
     portID :: String
     , position :: Node
-    , voltage :: Float 
-    , current :: Float 
+    , voltage :: Double 
+    , current :: Double 
     } deriving (Show, Eq)
 
 -- Device 
@@ -37,7 +37,8 @@ data Device = Device {
     , dtype :: DeviceType
     , location :: Node
     , ports :: ([Port], [Port])
-    , value :: Float
+    , value :: Double
+    , initVal :: Double
     , parameters :: [String]
     }  deriving (Show, Eq)
 
@@ -49,6 +50,7 @@ defaultDevice = Device {
     , location = Node { node = (0, 0) }
     , parameters = []
     , value = 0.0
+    , initVal = 0.0
     , ports = ([], [])
     } 
 
@@ -57,12 +59,12 @@ data StmtType =
     InPortExpr { inPorts :: [String] }
     | OutPortExpr { outPorts :: [String] }
     | ValueExpr { vValue :: Double }
-    | ParamExpr { paramName :: String, paramValue :: Double }
-    | InitExpr { pName :: String, pValue :: Double }
-    | FunctionExpr { }
+    | ParamExpr { pName :: String, pValue :: Double }
+    | InitExpr {  initValue :: Double }
     | UnknownExpr
     deriving(Eq, Show)
 
+-- Atomic expression 
 defaultStmtType :: StmtType 
 defaultStmtType = UnknownExpr
 
@@ -71,19 +73,9 @@ data PortType = InPort | OutPort deriving (Show, Eq)
 
 -- Type of device statement
 data DeviceStmt = DeviceStmt {
-    expr :: String 
-    , stmt :: StmtType 
-    , comment :: String 
-    , spiceStmt :: String
-    , texStmt :: String 
-    , tikzStmt :: String 
+     stmts :: [StmtType]
     } deriving (Show, Eq)
 
 defaultStmt = DeviceStmt {
-    expr = ""
-    , stmt = defaultStmtType 
-    , comment = ""
-    , spiceStmt = ""
-    , texStmt = ""
-    , tikzStmt = ""
+    stmts = [] 
     }

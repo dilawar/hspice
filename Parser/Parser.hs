@@ -1,16 +1,20 @@
 module Parser.Parser where
 
-import Control.Monad (liftM)
+import Control.Applicative hiding ((<|>))
 import Text.Parsec
 import Parser.Lexer
 import Network.Devices
 import Parser.Transformer
+import Text.Parsec.Prim
 
 import Text.Parsec hiding (spaces)
 
+data Sign = Positive | Negative deriving (Eq, Show)
+
 -- The parser
 p_jeera = do
-    many1 p_jeeraStatement
+    design <- many1 p_jeeraStatement
+    return design
 
 p_jeeraStatement = 
     p_deviceDeclaration -- <|> p_connection
@@ -22,28 +26,19 @@ p_deviceDeclaration = do
     stmts <- braces p_deviceStatements 
     semi
     let device = createDevice deviceName t stmts
-    return $ show stmts
+    return device
 
 p_deviceStatements = do 
     endBy1 p_deviceStatement semi
 
 p_deviceStatement =
-    (do 
-        a <- p_portStatement
-        return $ defaultStmt { stmt = a } 
-    )
-    <|> 
-    ( do 
-        v <- p_valueStatement 
-        return (defaultStmt { stmt = v })
-    )
+    p_portStatement <|> p_valueStatement <|> p_initValue <|> p_parameter
 
 p_deviceType = do 
     ((reserved "Resistor") >> return "Resistor")
     <|> ((reserved "Capacitor") >> return "Capacitor")
     <|> ((reserved "VSource") >> return "VSource")
     <|> ((reserved "ISource") >> return "ISource")
-    <|> ((reserved "Device") >> return "Device")
 
 
 p_portStatement = do
@@ -55,15 +50,49 @@ p_portStatement = do
 p_valueStatement = do
     (reserved "value") 
     (reservedOp "=")
-    value <- p_floatOrInteger 
+    value <- p_signedFloatOrInteger 
     return $ ValueExpr { vValue = value }
 
-p_floatOrInteger =  ((float >>= return) <|> (integer >>= return . fromInteger))
+p_initValue = do
+    (reserved "init")
+    (reservedOp "=")
+    value <- p_signedFloatOrInteger 
+    return $ InitExpr { initValue = value }
+
+p_parameter = do
+    pname <- identifier 
+    (reservedOp "=")
+    value <- p_signedFloatOrInteger 
+    return $ ParamExpr { pName = pname, pValue = value }
+
+p_signedFloatOrInteger = 
+    (do 
+        (char '-') 
+        f <- p_floatOrInteger
+        return (0.0 - f)
+    )
+    <|> (do 
+        (char '+') 
+        f <- p_floatOrInteger 
+        return f
+    )
+    <|> (do 
+        f <- p_floatOrInteger 
+        return f
+    )
+
+
+p_floatOrInteger =
+    try (float >>= return)
+    <|> 
+    try (integer >>= return . fromIntegral)
+    <|>
+    (do  
+        num <- p_floatOrInteger
+        (char 'e')
+        p <- integer
+        return $ num * (10 ^^ p)
+    )
 
 -- Port names 
 p_portName = identifier 
-    
--- connections
-{-p_connection = identifier -}
-
-
