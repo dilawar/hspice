@@ -10,22 +10,22 @@ import Text.Parsec hiding (spaces)
 
 -- The parser
 p_jeera = do
-    endBy1 p_jeeraStatement (char ';' >> many p_eol)
+    many1 p_jeeraStatement
 
 p_jeeraStatement = 
-    p_deviceDeclaration <|> p_connection
+    p_deviceDeclaration -- <|> p_connection
 
 p_deviceDeclaration = do
     deviceName <- identifier 
     reservedOp "="
     t <- p_deviceType
-    char '{' >> spaces 
-    stmts <- lexeme p_deviceStatements 
-    char '}' >> spaces 
+    stmts <- braces p_deviceStatements 
+    semi
     let device = createDevice deviceName t stmts
-    return $ show device
+    return $ show stmts
 
-p_deviceStatements = endBy1 (lexeme p_deviceStatement) (char ';' >>  skipMany p_eol)
+p_deviceStatements = do 
+    endBy1 p_deviceStatement semi
 
 p_deviceStatement =
     (do 
@@ -37,12 +37,6 @@ p_deviceStatement =
         v <- p_valueStatement 
         return (defaultStmt { stmt = v })
     )
-    <?> "Unsupported statement"
-
-p_portStatement = do
-    t <- (( reserved "in" >> return "in" ) <|> (reserved "out" >> return "out"))
-    ports <- commaSep1 p_portName 
-    return $ createPortExpr t ports 
 
 p_deviceType = do 
     ((reserved "Resistor") >> return "Resistor")
@@ -50,7 +44,12 @@ p_deviceType = do
     <|> ((reserved "VSource") >> return "VSource")
     <|> ((reserved "ISource") >> return "ISource")
     <|> ((reserved "Device") >> return "Device")
-    <?> "Unknown device"
+
+
+p_portStatement = do
+    t <- (( reserved "in" >> return "in" ) <|> (reserved "out" >> return "out"))
+    ports <- commaSep p_portName 
+    return $ createPortExpr t ports 
 
 
 p_valueStatement = do
@@ -61,22 +60,10 @@ p_valueStatement = do
 
 p_floatOrInteger =  ((float >>= return) <|> (integer >>= return . fromInteger))
 
-{-
-    name <- identifier 
-    op <- reservedOp "="
-    value <- ((float >>= return) <|> (integer >>= return . fromInteger))
-    return $ ValueExpr { vParamName = name, vValue = value }
--}
-
+-- Port names 
 p_portName = identifier 
     
 -- connections
-p_connection = identifier 
-
--- eol
-p_eol =  try (string "\n\r")
-    <|> try (string "\r\n")
-    <|> string "\n"
-    <|> string "\r"
+{-p_connection = identifier -}
 
 

@@ -1,10 +1,9 @@
-r1 = Resistor {
-    in a;
-    value = 10000.0;
-    };
+r1 = Resistor { in a; out b; value = 10000.0; };
+
 c1 = Capacitor {
     value = 100000.0;
     };
+
 d1 = Device {
         in a;
         out b, o;

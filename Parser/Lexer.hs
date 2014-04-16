@@ -23,7 +23,6 @@ jeeraDef = emptyDef {
         }
         
 lexer = P.makeTokenParser jeeraDef
-
 identifier = P.identifier lexer
 reserved = P.reserved lexer
 operator = P.operator lexer
