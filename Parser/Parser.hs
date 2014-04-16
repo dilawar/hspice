@@ -3,53 +3,64 @@ module Parser.Parser where
 import Control.Monad (liftM)
 import Text.Parsec
 import Parser.Lexer
+import Network.Devices
+import Parser.Transformer
 
 import Text.Parsec hiding (spaces)
 
 -- The parser
-jeera = endBy1 jeeraStatement (char ';' >> many eol)
+p_jeera = do
+    endBy1 p_jeeraStatement (char ';' >> many p_eol)
 
-jeeraStatement = 
-    deviceDeclaration <|> connection
+p_jeeraStatement = 
+    p_deviceDeclaration <|> p_connection
 
-deviceDeclaration = do
+p_deviceDeclaration = do
     deviceName <- identifier 
     reservedOp "="
-    t <- deviceType
-    dstmts <- (braces $ lexeme deviceStatements)
-    return "Device"
+    t <- p_deviceType
+    stmts <- (braces $ lexeme p_deviceStatements)
+    let device = createDevice deviceName t stmts
+    return $ show device
 
-deviceStatements = endBy1 deviceStatement (char ';' >> skipMany eol)
+p_deviceStatements = endBy1 p_deviceStatement (char ';' >> skipMany p_eol)
 
-deviceStatement =  do
-    portStatement <|> valueStatement 
+p_deviceStatement =
+    (do 
+        a <- p_portStatement
+        return $ defaultStmt { stmt = a } 
+    )
+    <|> 
+    ( do 
+        v <- p_valueStatement 
+        return (defaultStmt { stmt = v })
+    )
 
-portStatement = do
-    t <- (reserved "in") <|> (reserved "out" ) 
-    ports <- commaSep1 portName 
-    return "portStatement"
+p_portStatement = do
+    t <- (( reserved "in" >> return "in" ) <|> (reserved "out" >> return "out"))
+    ports <- commaSep1 p_portName 
+    return $ createPortExpr t ports 
 
-deviceType = do 
-    (reserved "Resistor")
-    <|> (reserved "Capacitor")
-    <|> (reserved "VSource")
-    <|> (reserved "ISource")
+p_deviceType = do 
+    ((reserved "Resistor") >> return "Resistor")
+    <|> ((reserved "Capacitor") >> return "Capacitor")
+    <|> ((reserved "VSource") >> return "VSource")
+    <|> ((reserved "ISource") >> return "ISource")
 
 
-
-valueStatement = do
+p_valueStatement = do
     name <- identifier 
     op <- reservedOp "="
-    value <- decimal 
-    return "Value"
+    value <- float 
+    return $ ValueExpr { vParamName = name, vValue = value }
 
-portName = identifier 
+p_portName = identifier 
     
 -- connections
-connection = identifier 
+p_connection = identifier 
 
 -- eol
-eol =  try (string "\n\r")
+p_eol =  try (string "\n\r")
     <|> try (string "\r\n")
     <|> string "\n"
     <|> string "\r"

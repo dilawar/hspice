@@ -1,4 +1,4 @@
-module Devices where 
+module Network.Devices where 
 
 -- Node is a point in fabric. 
 data Node = Node {node :: (Int, Int)} deriving (Show, Eq) 
@@ -7,7 +7,7 @@ data Node = Node {node :: (Int, Int)} deriving (Show, Eq)
 data Wire = Wire { wire :: [Node] } deriving (Show, Eq)
 
 -- Fabric has devices and wires. It can be used to draw the circuit.
-data Fabric = Fabric {network :: [Device], connection :: [Wire] } deriving Show 
+data Fabric = Fabric {network :: [Device], topology :: [Wire] } deriving Show 
 
 -- This is port 
 data Port = Port {
@@ -25,13 +25,63 @@ data DeviceType = Res
     | Fet 
     | Dio 
     | Zen
-    deriving (Show)
+    | Unknown 
+    deriving (Eq, Show)
 
-
+-- Device
 data Device = Device {
-    id :: Int
-    , type :: DeviceType
-    , postition :: Node
+    did :: Int
+    , dname :: String
+    , dtype :: DeviceType
+    , location :: Node
     , ports :: ([Port], [Port])
+    , value :: Float
     , parameters :: [String]
     }  deriving (Show, Eq)
+
+-- Default constructor 
+defaultDevice = Device {
+     dtype = Unknown
+    , did = 0
+    , dname = ""
+    , location = Node { node = (0, 0) }
+    , parameters = []
+    , value = 0.0
+    , ports = ([], [])
+    } 
+
+-- Device Statements 
+data StmtType =
+    InPortExpr { inPorts :: [String] }
+    | OutPortExpr { outPorts :: [String] }
+    | ValueExpr { vParamName :: String, vValue :: Double }
+    | ParamExpr { paramName :: String, paramValue :: Double }
+    | InitExpr { pName :: String, pValue :: Double }
+    | FunctionExpr { }
+    | UnknownExpr
+    deriving(Eq, Show)
+
+defaultStmtType :: StmtType 
+defaultStmtType = UnknownExpr
+
+-- Port type 
+data PortType = InPort | OutPort deriving (Show, Eq)
+
+-- Type of device statement
+data DeviceStmt = DeviceStmt {
+    expr :: String 
+    , stmt :: StmtType 
+    , comment :: String 
+    , spiceStmt :: String
+    , texStmt :: String 
+    , tikzStmt :: String 
+    } deriving (Show, Eq)
+
+defaultStmt = DeviceStmt {
+    expr = ""
+    , stmt = defaultStmtType 
+    , comment = ""
+    , spiceStmt = ""
+    , texStmt = ""
+    , tikzStmt = ""
+    }
