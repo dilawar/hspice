@@ -1,6 +1,6 @@
 module Network.Devices where 
 
-import Data.Either
+import qualified Data.Map as M
 
 -- Node is a point in fabric. 
 data Node = Node {node :: (Int, Int)} deriving (Show, Eq) 
@@ -39,7 +39,7 @@ data Device = Device {
     , ports :: ([Port], [Port])
     , value :: Double
     , initVal :: Double
-    , parameters :: [String]
+    , parameters :: M.Map String Double
     }  deriving (Show, Eq)
 
 -- Default constructor 
@@ -48,7 +48,7 @@ defaultDevice = Device {
     , did = 0
     , dname = ""
     , location = Node { node = (0, 0) }
-    , parameters = []
+    , parameters = M.empty
     , value = 0.0
     , initVal = 0.0
     , ports = ([], [])
