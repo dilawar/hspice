@@ -2,10 +2,13 @@ r1 = Resistor {
     value = 10000.0; 
     };
 
+r2 = Resistor {
+    value = 3e6;
+};
+
 c1 = Capacitor {
     value = 100000.0;
     init = 1e-6;
-    cm = -2.0e-6;
     };
 
 // Add them in parallel

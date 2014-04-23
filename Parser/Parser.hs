@@ -17,7 +17,14 @@ p_jeera = do
     return design
 
 p_jeeraStatement = 
-    p_deviceDeclaration -- <|> p_connection
+    (do
+        deviceDecl <- p_deviceDeclaration
+        return deviceDecl
+    ) 
+    <|> (do
+        connection <- p_connection 
+        return connection
+    )
 
 p_deviceDeclaration = do
     deviceName <- identifier 
@@ -39,7 +46,6 @@ p_deviceType = do
     <|> ((reserved "Capacitor") >> return "Capacitor")
     <|> ((reserved "VSource") >> return "VSource")
     <|> ((reserved "ISource") >> return "ISource")
-
 
 p_portStatement = do
     t <- (( reserved "in" >> return "in" ) <|> (reserved "out" >> return "out"))
@@ -64,6 +70,9 @@ p_parameter = do
     (reservedOp "=")
     value <- p_signedFloatOrInteger 
     return $ ParamExpr { pName = pname, pValue = value }
+
+p_connection = do
+    identifier 
 
 p_signedFloatOrInteger = 
     (do 

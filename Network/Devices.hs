@@ -54,6 +54,21 @@ defaultDevice = Device {
     , ports = ([], [])
     } 
 
+data Network = Network {
+    networkName :: String
+    , connections :: [DeviceConnection]
+    , netowrkPorts :: ([Port], [Port])
+    }
+
+type DeviceOrNetwork = Device | Network 
+
+-- Connection between two devices
+data DeviceConnection = DeviceConnection {
+    firstDevice :: Device 
+    , secondDevice :: Device
+    , portMap :: [(Port, Port)]
+    }
+
 -- Device Statements 
 data StmtType =
     InPortExpr { inPorts :: [String] }
